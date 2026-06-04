@@ -72,11 +72,44 @@
     transform: translate(-50%, 0) scale(1);
     opacity: 1;
   }
+
+  /* 🛠️ MODIFICADO: Botones transparentes premium con el mismo hover fluido de antes */
+  .btn {
+    width: 250px;
+    padding: 18px;
+    margin: 12px;
+    font-weight: bold;
+    font-size: 16px;
+    cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border-radius: 20px; 
+    color: #ffffff;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
+
+    /* Estilo Cristal Totalmente Transparente */
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.25),
+                0 4px 15px rgba(0, 0, 0, 0.2);
+                
+    /* Transición de escala e iluminación ultra fluida */
+    transition: all 0.3s ease-in-out;
+  }
+
+  .btn:hover {
+    transform: scale(1.05);
+    background: rgba(255, 255, 255, 0.12); /* Se ilumina sin opacar */
+    border-color: rgba(255, 255, 255, 0.6);
+    box-shadow: inset 0 1px 3px rgba(255, 255, 255, 0.4),
+                0 0 25px rgba(255, 255, 255, 0.15);
+  }
+
+  .btn:active {
+    transform: scale(0.98);
+  }
 </style>
 
-
-
-    <!-- Ruta corregida para salir de HTML y entrar a CSS -->
     <link rel="stylesheet" href="./vista/css/login.css">
 </head>
 
@@ -84,7 +117,6 @@
 
     <div id="splash">
 
-  <!-- Filtro SVG gooey -->
   <svg width="0" height="0" style="position:absolute">
     <filter id="gooey">
       <feGaussianBlur in="SourceGraphic" stdDeviation="10" />
@@ -96,7 +128,6 @@
     </filter>
   </svg>
 
-  <!-- Círculos animados -->
   <div class="gooey-wrap" id="gooeyWrap">
     <div class="dot" id="d1"></div>
     <div class="dot" id="d2"></div>
@@ -106,18 +137,13 @@
     <div class="dot" id="d6"></div>
   </div>
 
-  <!-- Logo PNG -->
-  <!-- ⚠️ CAMBIA ESTA RUTA por la de tu logo -->
-  <!-- Cambia logo.png por la imagen con glow -->
-<img class="logo-reveal" id="logoReveal" src="./vista/img/logo.png" alt="PlanClub">
+  <img class="logo-reveal" id="logoReveal" src="./vista/img/logo.png" alt="PlanClub">
 
-</div>
 </div>
 
     <div class="secret-trigger" onclick="abrirAdmin()"></div>
 
     <div class="logo-container">
-        <!-- RUTA CORREGIDA: Sale de HTML y entra a IMG -->
         <img src="./vista/img/logo.png" alt="Logo" class="logo-image">
         <div class="logo">PLANCLUB</div>
     </div>
@@ -128,7 +154,6 @@
         <button class="btn" onclick="showPanel('registerPanel')">REGISTRARSE</button>
     </div>
 
-    <!-- Panel de Login -->
     <div class="panel" id="loginPanel">
         <h2 style="margin-bottom: 20px; color: var(--champagne-main)">BIENVENIDO</h2>
         <div class="input-group"><input type="text" id="loginUser" placeholder="Usuario"></div>
@@ -145,7 +170,6 @@
         <div class="close" onclick="hidePanels()">VOLVER</div>
     </div>
 
-    <!-- Panel de Registro -->
     <div class="panel" id="registerPanel">
         <h2 style="margin-bottom: 20px; color: var(--champagne-main)">NUEVA CUENTA</h2>
         <div class="input-group"><input type="text" id="regUser" placeholder="Crea un Usuario"></div>
@@ -162,7 +186,6 @@
         <div class="close" onclick="hidePanels()">CANCELAR</div>
     </div>
 
-    <!-- Panel Admin -->
     <div class="panel" id="adminPanel">
         <h2 style="color: var(--champagne-main)">ADMIN CONTROL</h2>
         <div class="admin-list">
@@ -173,7 +196,6 @@
         <div class="close" onclick="hidePanels()">CERRAR GESTOR</div>
     </div>
 
-    <!-- Panel Recuperar -->
     <div class="panel" id="recoverPanel">
         <h2 style="margin-bottom: 20px; color: var(--champagne-main)">RECUPERAR CONTRASEÑA</h2>
         <div class="input-group"><input type="text" id="recoverUser" placeholder="Ingresa tu usuario"></div>
@@ -183,7 +205,6 @@
         <div class="close" onclick="hidePanels()">VOLVER</div>
     </div>
 
-    <!-- Ruta corregida para el Script -->
     <script src="./vista/js/login.js"></script>
     <script>
 (function () {
@@ -230,8 +251,6 @@
     });
   }, 2000);
 
-  
-
   // Fase 3 (3.1s): ocultar círculos, mostrar logo centrado
   setTimeout(() => {
     dots.forEach(dot => { dot.style.opacity = '0'; });
@@ -256,8 +275,6 @@
   }, 5000);
 
 })();
-</script>
-
 </script>
 </body>
 </html>
