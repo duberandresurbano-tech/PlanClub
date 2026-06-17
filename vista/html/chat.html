@@ -170,16 +170,21 @@
 
   <style>
         body {      
-    background-image: url('../img/fondo.png');        
+    /* Esta línea añade una capa negra con 70% de opacidad sobre tu imagen */
+    background-image: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('../img/fondo.png');        
     background-repeat: no-repeat;      
     background-size: cover;        
     background-position: center;           
     background-attachment: fixed;        
     font-family: sans-serif;
-    color: #333;
+    color: #ffffff; /* Cambiado a blanco para contrastar con el fondo oscuro */
+}
+
+
+    
  }
     </style>
 
-  <script type="module" src="../js/chat.js"></script>
+  <script type="module" src="../js/catalogo.js"></script>
 </body>
 </html>

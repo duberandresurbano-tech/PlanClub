@@ -3,100 +3,80 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Catálogo Bar Gold</title>
+    <title>Catálogo Bar Gold - Ultra Premium Edition</title>
     <link rel="stylesheet" href="../css/catalogo.css">
 </head>
 <body>
 
-<div class="phone-container">
-    <div class="video-background-container">
-        <video autoplay muted loop playsinline class="bg-video">
-            <source src="../assets/video-bg.mp4" type="video/mp4">
-            </video>
-        <div class="video-overlay"></div> </div>
+    <video class="video-bg-global" autoplay muted loop playsinline>
+        <source src="https://pixabay.com/es/videos/download/x-33628_medium.mp4" type="video/mp4">
+    </video>
+    <div class="video-overlay"></div>
 
-    <button class="back-home-btn" id="btnBack" onclick="regresar()">←</button>
+    <div class="phone-glow-wrapper">
+        <div class="phone-container">
+            
+            <header id="app-header">
+                <button class="top-left-btn" id="btnAccionSuperior" onclick="manejadorBotonSuperior()">
+                    <img src="image_55ca16.png" id="logoSuperior" alt="Logo">
+                    <span class="home-icon" id="casaSuperior">🏠</span>
+                    <span class="arrow" id="flechaSuperior">←</span>
+                </button>
+                <button class="header-title-btn" id="header-title" onclick="filtrarCategoria('bebidas')">Catálogo</button>
+            </header>
 
-    <div id="overlay">
-        <div id="modal-confirmacion">
-            <h2>¿Confirmar pedido?</h2>
-            <p>Tu orden será procesada de inmediato.</p>
-            <button class="modal-btn btn-confirm" onclick="procesarPedido()">SÍ</button>
-            <button class="modal-btn btn-cancel" onclick="regresar()">NO</button>
-        </div>
-        <div id="modal-gracias" style="display:none;">
-            <div style="font-size: 60px;">🏆</div>
-            <h2>¡GRACIAS POR TU PEDIDO!</h2>
-            <p>En breve estaremos contigo.</p>
-            <button class="modal-btn btn-confirm" onclick="reiniciarApp()" style="width: 200px;">NUEVO PEDIDO</button>
-        </div>
-    </div>
+            <div id="overlay">
+                <div class="modal-card" id="modal-confirmacion">
+                    <h2>¿Confirmar pedido?</h2>
+                    <p>Tu orden será procesada de inmediato.</p>
+                    <div class="modal-flex-btns">
+                        <button class="modal-btn yes" onclick="procesarPedido()">SÍ, PEDIR</button>
+                        <button class="modal-btn no" onclick="regresar()">CANCELAR</button>
+                    </div>
+                </div>
+                
+                <div class="modal-card" id="modal-gracias" style="display:none;">
+                    <img src="image_55ca16.png" class="success-logo" alt="Logo Bar Gold">
+                    <h2>¡GRACIAS POR TU PEDIDO!</h2>
+                    <p>En breve estaremos contigo en tu mesa.</p>
+                    <button class="modal-btn" onclick="reiniciarApp()" style="background: linear-gradient(135deg, #ffd700 0%, #b89700 100%); color:#0f0f12; width: 100%;">NUEVO PEDIDO</button>
+                </div>
+            </div>
 
-    <div class="content" id="catalogo-screen">
-        <header>Catálogo</header>
-        
-        <div id="contenedor-productos-dinamicos">
-            <div class="section-title">BEBIDAS</div>
-            <div class="products">
-                <div class="card">
-                    <img src="https://cdn.mos.cms.futurecdn.net/v2/t:0,l:218,cw:563,ch:563,q:80,w:563/wn2NRMm5iJBXeZPBrefnhK.jpg">
-                    <p>Bacardi</p><p class="price">$70.000</p>
-                    <button class="add-btn" onclick="agregar('Bacardi',70000)">+</button>
+            <div id="toast-notificacion" class="toast">¡Producto agregado! 🥂</div>
+
+            <div class="content-scroll" id="catalogo-screen">
+                <div class="category-menu" id="category-bar">
+                    <button class="category-btn active" id="btn-bebidas" onclick="filtrarCategoria('bebidas')">Bebidas</button>
+                    <button class="category-btn" id="btn-promociones" onclick="filtrarCategoria('promociones')">Promociones %</button>
+                    <button class="category-btn" id="btn-combos" onclick="filtrarCategoria('combos')">Combos 🍻</button>
                 </div>
-                <div class="card">
-                    <img src="https://i.pinimg.com/474x/82/d8/48/82d84883fb32e2e4c31c7760830ee0f1.jpg">
-                    <p>Coronita</p><p class="price">$5.000</p>
-                    <button class="add-btn" onclick="agregar('Coronita',5000)">+</button>
+
+                <div id="contenedor-productos-dinamicos"></div>
+            </div>
+
+            <div class="content-scroll" id="pedido" style="display: none; opacity: 0; transform: scale(0.95);">
+                <div id="listaPedido"></div>
+                
+                <div class="total-container">
+                    <span class="total-label">Total a pagar</span>
+                    <span class="total-amount">$<span id="total">0</span></span>
                 </div>
-                <div class="card">
-                    <img src="https://pbs.twimg.com/profile_images/472153934015254529/XOrYqyI2_400x400.jpeg">
-                    <p>Néctar</p><p class="price">$50.000</p>
-                    <button class="add-btn" onclick="agregar('Néctar',50000)">+</button>
+                
+                <div class="cart-actions-box">
+                    <button class="btn-action clear" onclick="vaciarCarrito(event)">VACIAR</button>
+                    <button class="btn-action confirm" onclick="abrirConfirmacion()">CONFIRMAR</button>
                 </div>
-                <div class="card">
-                    <img src="https://images.seeklogo.com/logo-png/18/1/cerveza-poker-logo-png_seeklogo-184736.png">
-                    <p>Poker</p><p class="price">$3.500</p>
-                    <button class="add-btn" onclick="agregar('Poker',3500)">+</button>
-                </div>
-                <div class="card">
-                    <img src="https://imgproxy.domestika.org/unsafe/rs:fill/plain/src://content-items/002/864/382/Aguila_logo-original.png?1552905177">
-                    <p>aguila</p><p class="price">$3.500</p>
-                    <button class="add-btn" onclick="agregar('aguila',3500)">+</button>
-                </div>
-                <div class="card">
-                    <img src="https://logowik.com/content/uploads/images/powerade374.logowik.com.webp">
-                    <p>powerade</p><p class="price">$5.000</p>
-                    <button class="add-btn" onclick="agregar('powerade',5000)">+</button>
-                </div>
-                <div class="card">
-                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT0ro27SpW_X4XaTzLFQB2BWwNb80we3Kj9Ng&s">
-                    <p>aguardiente amarillo</p><p class="price">$50.000</p>
-                    <button class="add-btn" onclick="agregar('aguardiente amarillo',50000)">+</button>
-                </div>
-                <div class="card">
-                    <img src="https://www.ronviejodecaldasrum.com/image/5862128.1593880979000/ronviego_logo_RED_W_RED_STROKE_540X410_300_O.png">
-                    <p>ron viejo de caldas</p><p class="price">$62.000</p>
-                    <button class="add-btn" onclick="agregar('ron viejo de caldas',62000)">+</button>
-                </div>
+            </div>
+
+            <div class="nav-bottom" id="main-nav">
+                <button class="nav-btn" onclick="verPedido()">
+                    Ver Mi Orden <span class="badge" id="cart-count">0</span>
+                </button>
             </div>
         </div>
     </div>
 
-    <div class="content" id="pedido" style="display: none;">
-        <header>MI PEDIDO</header>
-        <div id="listaPedido"></div>
-        <div class="total">TOTAL: $<span id="total">0</span></div>
-        <div class="actions" style="margin-top:20px; display:flex; gap:10px;">
-            <button class="btn-cancel" onclick="vaciarCarrito()" style="flex:1; padding:12px; border-radius:10px; border:none; cursor:pointer;">VACIAR</button>
-            <button class="btn-confirm" onclick="abrirConfirmacion()" style="flex:1; padding:12px; border-radius:10px; border:none; cursor:pointer; background:#ffd700; font-weight:bold;">CONFIRMAR</button>
-        </div>
-    </div>
-
-    <div class="nav" id="main-nav">
-        <button onclick="verPedido()">Ver Pedido (<span id="cart-count">0</span>)</button>
-    </div>
-</div>
-
-<script src="../js/catalogo.js"></script>
+    <script src="../js/catalogo.js"></script>
 </body>
 </html>
