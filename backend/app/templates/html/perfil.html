@@ -10,69 +10,46 @@
 </head>
 <body>
 
-    <div class="phone">
-        <button id= "btn-regresar" class="btn-regresar"> ⬅ </button>
-        <a href="#" class="top-icon right" onclick="openNotificationModal()"><i class="fa-solid fa-bell"></i></a>
-
-            <div class="title">PERFIL</div>
-
-        <div class="profile-pic-container">
-            <div id="mainProfilePic" class="profile-img-preview">
-                <i class="fa-solid fa-user"></i>
-            </div>
-            <div class="edit-photo-pencil" onclick="openPhotoModal()">
-                <i class="fa-solid fa-pencil"></i>
+<div class="profile-container">
+        <h1>PERFIL</h1>
+        
+        <div class="avatar-section">
+            <div class="avatar-placeholder">
+                <button class="edit-icon">✎</button>
             </div>
         </div>
 
-        <div class="field">
-            <label>NOMBRE</label>
-            <input type="text" id="input-nombre" placeholder="Escribe tu nombre">
-        </div>
+        <form>
+            <div class="input-group">
+                <label>NOMBRE</label>
+                <input type="text" placeholder="Escribe tu nombre">
+            </div>
+            <div class="input-group">
+                <label>APELLIDO</label>
+                <input type="text" placeholder="Escribe tu apellido">
+            </div>
+            <div class="input-group">
+                <label>CORREO</label>
+                <input type="email" placeholder="ejemplo@correo.com">
+            </div>
+            <div class="input-group">
+                <label>TELÉFONO</label>
+                <input type="tel" placeholder="Tu número">
+            </div>
 
-        <div class="field">
-            <label>APELLIDO</label>
-            <input type="text" id="input-apellido" placeholder="Escribe tu apellido">
-        </div>
-
-        <div class="field">
-            <label>CORREO</label>
-            <input type="email" id="input-correo" placeholder="ejemplo@correo.com">
-        </div>
-
-        <div class="field">
-            <label>TELÉFONO</label>
-            <input type="text" id="input-telefono" placeholder="Tu número">
-        </div>
-
-        <button class="save-all-btn" onclick="saveAllData()">Guardar Cambios</button>
+            <button type="submit" class="save-btn">GUARDAR CAMBIOS</button>
+        </form>
     </div>
-
-    <div class="modal-overlay" id="photoEditModal">
-        <div class="modal-content">
-            <span class="close-btn" onclick="closePhotoModal()">&times;</span>
-            <p style="font-weight: bold;">ELEGIR FOTO DE PERFIL</p>
-            <div class="photo-grid">
-                <div class="profile-option" data-photo-src="../IMG/a.jpg" onclick="selectPhoto(this)"><img src="../../static/img/a.jpg"></div>
-                <div class="profile-option" data-photo-src="../IMG/b.jpg" onclick="selectPhoto(this)"><img src="../../static/img/b.jpg"></div>
-                <div class="profile-option" data-photo-src="../IMG/c.jpg" onclick="selectPhoto(this)"><img src="../../static/img/c.jpg"></div>
-            </div>
-            <button class="save-btn" onclick="applyPhotoChange()">ACEPTAR</button>
+    <div id="avatarModal" class="modal">
+    <div class="modal-content">
+        <h3>Selecciona tu avatar</h3>
+        <div class="avatar-options">
+            <img src="img/icono_hombre.png" onclick="selectAvatar('img/icono_hombre.png')" alt="Hombre">
+            <img src="img/icono_mujer.png" onclick="selectAvatar('img/icono_mujer.png')" alt="Mujer">
         </div>
+        <button onclick="closeModal()">Cancelar</button>
     </div>
-
-    <div class="modal-overlay" id="notificationModal">
-        <div class="notification-content">
-            <span class="close-notif" onclick="closeNotificationModal()">&times;</span>
-            <div class="notif-icon">
-                <i class="fa-solid fa-bell-slash"></i>
-            </div>
-            <h3>NOTIFICACIONES</h3>
-            <p>No tienes notificaciones pendientes por el momento.</p>
-            <button class="notif-btn" onclick="closeNotificationModal()">ENTENDIDO</button>
-        </div>
-    </div>
-
+</div>
     <script src="../../static/js/perfil.js"></script>
 </body>
 </html>
