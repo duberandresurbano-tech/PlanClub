@@ -4,35 +4,35 @@ from app.models import db, Usuario
 bp = Blueprint('main', __name__)
 
 # 1. RUTA RAÍZ: Ahora sí va a renderizar tu index.html original de la raíz
+# 1. RUTA RAÍZ
 @bp.route('/')
 def index():
-    # Flask buscará index.html usando el puente que configuramos en el __init__.py
-    return render_template('index.html')
+    return render_template('html/index.html')
 
-# 2. RUTAS PARA TUS OTRAS VISTAS (Dentro de vista/html/)
+# 2. RUTAS DE NAVEGACIÓN (URLs limpias, sin repetir 'html/')
 @bp.route('/inicio')
 def inicio():
-    return render_template('vista/html/inicio.html')
+    return render_template('html/inicio.html')
 
 @bp.route('/catalogo')
 def catalogo():
-    return render_template('vista/html/catalogo.html')
+    return render_template('html/catalogo.html')
 
 @bp.route('/login')
 def login():
-    return render_template('vista/html/login.html')
+    return render_template('html/login.html')
 
 @bp.route('/chat')
 def chat():
-    return render_template('vista/html/chat.html')
+    return render_template('html/chat.html')
 
 @bp.route('/perfil')
 def perfil():
-    return render_template('vista/html/perfil.html')
+    return render_template('html/perfil.html')
 
 @bp.route('/reserva')
 def reserva():
-    return render_template('vista/html/reserva.html')
+    return render_template('html/reserva.html')
 
 
 # 3. RUTA DE PRUEBA: Mantenemos intacta tu ruta para meter el usuario a la DB
