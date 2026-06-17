@@ -74,18 +74,11 @@
   }
 </style>
 
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}">
 
-
-    <!-- Ruta corregida para salir de HTML y entrar a CS-->
-    <link rel="stylesheet" href="../../static/css/login.css">
 </head>
 
 <body>
-
-  
-</script>
-
-    <div id="splash">
 
   <!-- Filtro SVG gooey -->
   <svg width="0" height="0" style="position:absolute">
@@ -112,7 +105,7 @@
   <!-- Logo PNG -->
   <!-- ⚠️ CAMBIA ESTA RUTA por la de tu logo -->
   <!-- Cambia logo.png por la imagen con glow -->
-<img class="logo-reveal" id="logoReveal" src="/backend/app/static/img/logo.png" alt="PlanClub">
+<img class="logo-reveal" id="logoReveal" src="{{ url_for('static', filename='img/logo.png') }}" alt="PlanClub">
 
 </div>
 </div>
@@ -121,7 +114,7 @@
 
     <div class="logo-container">
         <!-- RUTA CORREGIDA: Sale de HTML y entra a IMG -->
-        <img src="/backend/app/static/img/logo.png" alt="Logo" class="logo-image">
+        <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Logo" class="logo-image">
         <div class="logo">PLANCLUB</div>
     </div>
 
@@ -187,7 +180,7 @@
     </div>
 
     <!-- Ruta corregida para el Script -->
-    <script src="../../static/js/login.js"></script>
+    <script src="{{ url_for('static', filename='js/login.js') }}"></script>
     <script>
 (function () {
   // 1. Órbita matemática perfectamente simétrica (distribución circular uniforme)

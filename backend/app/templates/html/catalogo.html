@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Catálogo Bar Gold - Ultra Premium Edition</title>
-    <link rel="stylesheet" href="../../static/css/catalogo.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/catalogo.css') }}">
 </head>
 
 <body>
@@ -19,7 +19,7 @@
             
             <header id="app-header">
                 <button class="top-left-btn" id="btnAccionSuperior" onclick="manejadorBotonSuperior()">
-                    <img src="image_55ca16.png" id="logoSuperior" alt="Logo">
+                    <img src="{{ url_for('static', filename='img/logo.png') }}" id="logoSuperior" alt="Logo">
                     <span class="home-icon" id="casaSuperior">🏠</span>
                     <span class="arrow" id="flechaSuperior">←</span>
                 </button>
@@ -37,7 +37,7 @@
                 </div>
                 
                 <div class="modal-card" id="modal-gracias" style="display:none;">
-                    <img src="image_55ca16.png" class="success-logo" alt="Logo Bar Gold">
+                    <img src="{{ url_for('static', filename='img/logo.png') }}" class="success-logo" alt="Logo Bar Gold">
                     <h2>¡GRACIAS POR TU PEDIDO!</h2>
                     <p>En breve estaremos contigo en tu mesa.</p>
                     <button class="modal-btn" onclick="reiniciarApp()" style="background: linear-gradient(135deg, #ffd700 0%, #b89700 100%); color:#0f0f12; width: 100%;">NUEVO PEDIDO</button>
@@ -78,6 +78,6 @@
         </div>
     </div>
 
-    <script src="../../static/js/catalogo.js"></script>
+    <script src="{{ url_for('static', filename='js/catalogo.js') }}"></script>
 </body>
 </html>

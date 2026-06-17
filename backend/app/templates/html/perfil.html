@@ -5,13 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Perfil</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="../../static/css/perfil.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/perfil.css') }}">
     
 </head>
 <body>
 
     <div class="phone">
-        <button id= "btn-regresar" class="btn-regresar"> ⬅ </button>
+        <a href="{{ url_for('inicio') }}" id="btn-regresar" class="btn-regresar" style="text-decoration: none;"> ⬅ </a>
         <a href="#" class="top-icon right" onclick="openNotificationModal()"><i class="fa-solid fa-bell"></i></a>
 
             <div class="title">PERFIL</div>
@@ -53,9 +53,9 @@
             <span class="close-btn" onclick="closePhotoModal()">&times;</span>
             <p style="font-weight: bold;">ELEGIR FOTO DE PERFIL</p>
             <div class="photo-grid">
-                <div class="profile-option" data-photo-src="../IMG/a.jpg" onclick="selectPhoto(this)"><img src="../../static/img/a.jpg"></div>
-                <div class="profile-option" data-photo-src="../IMG/b.jpg" onclick="selectPhoto(this)"><img src="../../static/img/b.jpg"></div>
-                <div class="profile-option" data-photo-src="../IMG/c.jpg" onclick="selectPhoto(this)"><img src="../../static/img/c.jpg"></div>
+                <div class="profile-option" data-photo-src="{{ url_for('static', filename='img/a.jpg') }}" onclick="selectPhoto(this)"><img src="{{ url_for('static', filename='img/a.jpg') }}"></div>
+                <div class="profile-option" data-photo-src="{{ url_for('static', filename='img/b.jpg') }}" onclick="selectPhoto(this)"><img src="{{ url_for('static', filename='img/b.jpg') }}"></div>
+                <div class="profile-option" data-photo-src="{{ url_for('static', filename='img/c.jpg') }}" onclick="selectPhoto(this)"><img src="{{ url_for('static', filename='img/c.jpg') }}"></div>
             </div>
             <button class="save-btn" onclick="applyPhotoChange()">ACEPTAR</button>
         </div>
@@ -73,6 +73,6 @@
         </div>
     </div>
 
-    <script src="../../static/js/perfil.js"></script>
+    <script src="{{ url_for('static', filename='js/perfil.js') }}"></script>
 </body>
 </html>
