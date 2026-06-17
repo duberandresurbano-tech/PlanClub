@@ -549,6 +549,6 @@ digitInputs.forEach((inp, idx) => {
 });
 
 // ══════════════════════════════════════════════════════════
-//  INIT — intentar recuperar sesión al cargar la págin
+//  INIT — intentar recuperar sesiónal cargar la págin
 // ══════════════════════════════════════════════════════════
 intentarRecuperarSesion();

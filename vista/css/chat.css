@@ -614,7 +614,7 @@ html, body {
 }
 .send-btn:active { transform: scale(0.95); }
 
-/* ── RESPONSIVE ─────────────────────────────────────────── */
+/* ── RESPONSIVE ────────────────────────────────────────── */
 @media (max-width: 480px) {
   .access-card        { padding: 24px 18px; }
   .brand-name         { font-size: 22px; }
