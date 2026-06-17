@@ -1,7 +1,20 @@
-// Variables de control de estado de la reserva
+// Variables de control de estado de la reserva global
 let fechaSeleccionada = "";
-let mesaSeleccionada = null;
+let cantidadPersonas = 0;
+let mesasSeleccionadas = []; 
 let metodoPagoSeleccionado = "tarjeta"; // Por defecto
+
+/**
+ * 1. INICIALIZACIÓN DE BASE DE DATOS SIMULADA (HISTORIAL DE OCUPACIÓN)
+ * Si no existe un historial en el navegador, creamos uno con datos de prueba.
+ */
+if (!localStorage.getItem('historial_reservas')) {
+    const datosInicialesDePrueba = [
+        { fecha: "16/06/2026", mesas: [3, 4], personas: 3, total: "$40.000 COP" },
+        { fecha: "17/06/2026", mesas: [7, 8, 9], personas: 6, total: "$60.000 COP" }
+    ];
+    localStorage.setItem('historial_reservas', JSON.stringify(datosInicialesDePrueba));
+}
 
 /**
  * MÁSCARA AUTOMÁTICA PARA EL FORMATO DD/MM/YYYY
@@ -18,7 +31,7 @@ function mascaraFecha(input) {
 }
 
 /**
- * CONTROL DE NAVEGACIÓN ENTRE PANTALLAS
+ * CONTROL DE NAVEGACIÓN ENTRE PANTALLAS Y RENDERIZADO DINÁMICO
  */
 function cambiarVista(idVista) {
     document.querySelectorAll('.view').forEach(vista => {
@@ -30,6 +43,7 @@ function cambiarVista(idVista) {
         vistaActiva.classList.add('active');
     }
 
+    // Mostrar el menú de configuración solo en el Home principal
     const botonMenuTresLineas = document.querySelector('.settings-container');
     if (botonMenuTresLineas) {
         if (idVista === 'view-home' || idVista === '' || !idVista) {
@@ -38,52 +52,112 @@ function cambiarVista(idVista) {
             botonMenuTresLineas.style.display = 'none';
         }
     }
+
+    // Si el usuario entra a ver sus reservas, las pintamos desde el localStorage
+    if (idVista === 'view-list') {
+        renderizarMisReservas();
+    }
 }
 
 /**
- * FUNCIÓN PARA GENERAR EL MAPA DE MESAS
+ * PUNTO 1 & 3: GENERACIÓN REALISTA DEL PLANO (10 MESAS COMPLETAS + COMPORTAMIENTO POR FECHA)
  */
 function generarMapaMesas() {
-    const grid = document.getElementById('mapa-grid');
-    if (!grid) return;
+    const plano = document.getElementById('mapa-discoteca');
+    if (!plano) return;
     
-    grid.innerHTML = ""; 
-
-    const dj = document.createElement('div');
-    dj.className = 'dj-set';
-    dj.innerText = '🎧 DJ SET';
-    grid.appendChild(dj);
+    // Limpiar mesas viejas antes de redibujar
+    const mesasExistentes = plano.querySelectorAll('.mesa');
+    mesasExistentes.forEach(m => m.remove());
+    
+    mesasSeleccionadas = []; // Reiniciar carrito de selección
 
     const clasesMesas = ['m-r', 'm-y', 'm-o', 'm-b', 'm-t'];
+    const precioPorMesa = 20000;
 
-    for (let i = 1; i <= 30; i++) {
+    // Obtener las reservas existentes desde el LocalStorage para saber cuáles bloquear hoy
+    const historial = JSON.parse(localStorage.getItem('historial_reservas')) || [];
+    
+    // Buscamos si hay registros de ocupación específicamente para la fecha seleccionada
+    const reservaDelDia = historial.find(r => r.fecha === fechaSeleccionada);
+    // Si encontramos reservas, extraemos los números de las mesas ocupadas; si no, queda vacío []
+    const mesasOcupadasHoy = reservaDelDia ? reservaDelDia.mesas : [];
+
+    // Coordenadas premium en porcentaje para ubicar de forma envolvente las 10 mesas libres
+    const posiciones = [
+        { id: 1, x: 8, y: 28 },    // Lateral Izquierdo Alto
+        { id: 2, x: 84, y: 28 },   // Lateral Derecho Alto
+        { id: 3, x: 10, y: 54 },   // Lateral Izquierdo Medio
+        { id: 4, x: 82, y: 54 },   // Lateral Derecho Medio
+        { id: 5, x: 16, y: 78 },   // Lateral Izquierdo Bajo
+        { id: 6, x: 76, y: 78 },   // Lateral Derecho Bajo
+        { id: 7, x: 34, y: 88 },   // Curva Inferior Izquierda
+        { id: 8, x: 58, y: 88 },   // Curva Inferior Derecha
+        { id: 9, x: 36, y: 54 },   // Frente de pista VIP Izquierda
+        { id: 10, x: 56, y: 54 }   // Frente de pista VIP Derecha
+    ];
+
+    posiciones.forEach((pos, index) => {
         const mesa = document.createElement('div');
-        const claseAleatoria = clasesMesas[Math.floor(Math.random() * clasesMesas.length)];
+        const claseAleatoria = clasesMesas[index % clasesMesas.length];
         
         mesa.className = `mesa ${claseAleatoria}`;
-        mesa.innerText = `M-${i}`;
+        mesa.innerText = `M-${pos.id}`;
         
-        if (i === 4 || i === 12 || i === 19) {
+        mesa.style.left = `${pos.x}%`;
+        mesa.style.top = `${pos.y}%`;
+        
+        // CONDICIONAL DINÁMICA: Si la mesa está guardada como ocupada en esta fecha
+        if (mesasOcupadasHoy.includes(pos.id)) {
             mesa.classList.add('ocupada');
             mesa.innerText = '❌';
+            // No le asignamos onclick para que el botón gris quede totalmente inhabilitado
         } else {
+            // Mesa libre disponible para interactuar
             mesa.onclick = function() {
-                document.querySelectorAll('.mesa').forEach(m => m.classList.remove('selected'));
-                mesa.classList.add('selected');
-                mesaSeleccionada = i;
+                mostrarFeedback("", false); // Limpiar errores visuales previos
+
+                // Regala 1: De 1 a 4 personas -> Solo permite 1 mesa única
+                if (cantidadPersonas <= 4) {
+                    document.querySelectorAll('.mesa').forEach(m => m.classList.remove('selected'));
+                    mesasSeleccionadas = [pos.id];
+                    mesa.classList.add('selected');
+                } 
+                // Regla 2: De 5 a 10 personas -> Selección múltiple con tope estricto de 4
+                else {
+                    if (mesasSeleccionadas.includes(pos.id)) {
+                        mesasSeleccionadas = mesasSeleccionadas.filter(id => id !== pos.id);
+                        mesa.classList.remove('selected');
+                    } else {
+                        // Mensaje Exacto Solicitado corregido
+                        if (mesasSeleccionadas.length >= 4) {
+                            mostrarFeedback("⚠️ El maximo de mesas permitido por reserva es de 4.", true);
+                            return; 
+                        }
+                        mesasSeleccionadas.push(pos.id);
+                        mesa.classList.add('selected');
+                    }
+                }
                 
+                // Actualizar desglose de cobro en pantalla
                 const info = document.getElementById('map-info');
                 const txtMesa = document.getElementById('txt-mesas');
                 const txtTotal = document.getElementById('txt-total');
+                
                 if (info && txtMesa && txtTotal) {
-                    txtMesa.innerText = `Mesa Seleccionada: M-${i}`;
-                    txtTotal.innerText = `$${(150000).toLocaleString('es-CO')} COP`;
-                    info.style.display = 'block';
+                    if (mesasSeleccionadas.length > 0) {
+                        txtMesa.innerText = `Mesas reservadas: ${mesasSeleccionadas.map(id => `M-${id}`).join(', ')}`;
+                        let totalCalculado = mesasSeleccionadas.length * precioPorMesa;
+                        txtTotal.innerText = `$${totalCalculado.toLocaleString('es-CO')} COP`;
+                        info.style.display = 'block';
+                    } else {
+                        info.style.display = 'none';
+                    }
                 }
             };
         }
-        grid.appendChild(mesa);
-    }
+        plano.appendChild(mesa);
+    });
 }
 
 /**
@@ -128,34 +202,32 @@ function validarFecha(fechaInput) {
 }
 
 /**
- * ACCIÓN DEL BOTÓN CONTINUAR RESERVACIÓN (CON VALIDACIONES COMPLETAS)
+ * ACCIÓN DEL BOTÓN CONTINUAR RESERVACIÓN
  */
 function procesarPasoFecha() {
     const inputFecha = document.getElementById('input-fecha').value;
     const inputPersonas = document.getElementById('personas').value;
 
-    // 1. Validar el campo de fecha primero
     const validacionFecha = validarFecha(inputFecha);
     if (!validacionFecha.valido) {
         mostrarFeedback(validacionFecha.mensaje, true);
         return;
     }
 
-    // 2. Validar que digite la cantidad de personas (No permitir vacío)
     if (!inputPersonas || inputPersonas.trim() === "") {
         mostrarFeedback("⚠️ Por favor, digite la cantidad de personas.", true);
         return;
     }
 
-    // 3. Validar el límite estricto de personas (Mínimo 1, Máximo 10)
     const numPersonas = parseInt(inputPersonas, 10);
     if (numPersonas < 1 || numPersonas > 10 || isNaN(numPersonas)) {
         mostrarFeedback("⚠️ Máximo 10 personas por reserva.", true);
         return;
     }
 
-    // Si pasa todos los filtros con éxito
     fechaSeleccionada = inputFecha; 
+    cantidadPersonas = numPersonas; 
+    
     mostrarFeedback("", false); 
     
     generarMapaMesas();
@@ -168,23 +240,115 @@ function procesarPasoFecha() {
 function selectPay(elemento, metodo) {
     document.querySelectorAll('.metodo-pago').forEach(item => item.classList.remove('active'));
     elemento.classList.add('active');
-    metodoPagoSeleccionado = metodo;
+    metodoPagoSelected = metodo;
 }
 
 /**
- * FINALIZAR PROCESO
+ * PUNTO 2 & 3: PROCESAR PAGO Y PERSISTENCIA DE DATOS LOCALES
  */
 function confirmarReservaFinal() {
-    if (!mesaSeleccionada) {
-        mostrarFeedback("⚠️ Selecciona una mesa en el plano antes de continuar.", true);
+    if (mesasSeleccionadas.length === 0) {
+        mostrarFeedback("⚠️ Selecciona al menos una mesa en el plano antes de continuar.", true);
         return;
     }
 
+    // Calcular el total monetario para meterlo al historial
+    const totalTexto = document.getElementById('txt-total').innerText;
+
+    // Obtener historial viejo, empujar la nueva reserva y sobreescribir el LocalStorage
+    const historial = JSON.parse(localStorage.getItem('historial_reservas')) || [];
+    
+    // Si ya existía una reserva del mismo usuario en ese mismo día, unificamos las mesas, si no creamos un registro nuevo
+    const registroExistente = historial.find(r => r.fecha === fechaSeleccionada);
+    if (registroExistente) {
+        registroExistente.mesas = [...registroExistente.mesas, ...mesasSeleccionadas];
+    } else {
+        historial.push({
+            fecha: fechaSeleccionada,
+            mesas: mesasSeleccionadas,
+            personas: cantidadPersonas,
+            total: totalTexto
+        });
+    }
+    
+    localStorage.setItem('historial_reservas', JSON.stringify(historial));
+
     mostrarFeedback("🎉 ¡Reserva procesada con éxito!", false);
     
+    // RECOMIENDA E INICIA NUEVO FLUJO EN RESERVA.HTML
     setTimeout(() => {
-        window.location.href = "perfil.html"; 
+        window.location.href = "reserva.html"; 
     }, 2500);
+}
+function renderizarMisReservas() {
+    const contenedor = document.getElementById('reserva-container');
+    if (!contenedor) return;
+
+    contenedor.innerHTML = ""; 
+    const historial = JSON.parse(localStorage.getItem('historial_reservas')) || [];
+
+    // --- BOTÓN DE PÁNICO (REFORZADO) ---
+    const btnReset = document.createElement('button');
+    btnReset.innerText = "Borrar Todo";
+    btnReset.style.position = "fixed";
+    btnReset.style.bottom = "20px";
+    btnReset.style.right = "20px";
+    btnReset.style.zIndex = "999999"; // Fuerza a que esté arriba de todo
+    btnReset.style.padding = "10px";
+    btnReset.style.opacity = "0.15";
+    btnReset.style.cursor = "pointer";
+    btnReset.style.transition = "opacity 0.3s";
+    
+    btnReset.style.opacity = "0.15";
+
+    btnReset.onmouseover = () => {
+        btnReset.style.opacity = "1";
+    };
+
+    btnReset.onmouseout = () => {
+        btnReset.style.opacity = "0.15";
+    };
+    
+    btnReset.onclick = function(e) {
+    e.preventDefault();
+
+    console.log("Intentando borrar...");
+
+    if (confirm("¿Estás 100% seguro de borrar TODAS las reservas?")) {
+
+        if (confirm("Esta acción dejará todas las mesas libres. ¿Deseas continuar?")) {
+
+            localStorage.removeItem('historial_reservas');
+
+            localStorage.setItem(
+                'historial_reservas',
+                JSON.stringify([])
+            );
+
+            alert("Todas las reservas fueron eliminadas correctamente.");
+
+            location.reload();
+        }
+    }
+};
+    document.body.appendChild(btnReset); // Lo movemos al body para que nada lo bloquee
+    // --------------------------------------
+
+    if (historial.length === 0) {
+        contenedor.innerHTML = `<p style="text-align:center; color:#888; padding:20px;">No tienes reservas registradas.</p>`;
+        return;
+    }
+
+    historial.forEach(res => {
+        const tarjeta = document.createElement('div');
+        tarjeta.className = 'card';
+        tarjeta.innerHTML = `
+            <p>📅 Fecha: ${res.fecha}</p>
+            <p>Mesa(s): ${res.mesas.join(', ')}</p>
+            <p>Total: ${res.total}</p>
+        `;
+        contenedor.appendChild(tarjeta);
+    });
 }
 
 /**
@@ -233,5 +397,5 @@ function toggleSettings() {
     }
 }
 
-// Iniciar en la pantalla principal
+// Iniciar aplicación en la visual Home
 cambiarVista('view-home');
