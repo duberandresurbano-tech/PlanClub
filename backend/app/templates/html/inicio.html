@@ -6,7 +6,7 @@
     <title>PlanClub</title>
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#000000">
-    <link rel="stylesheet" href="../../static/css/inicio.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/inicio.css') }}">
 </head>
 <body>
  
@@ -14,24 +14,18 @@
  
     <div class="container">
  
-        <!-- 🛠️ CORREGIDO: Contenedor del logo con la imagen arriba del nombre -->
-        <div class="logo-container">
-            <h1 class="logo">
-                PlanClub
-                <span>BAR</span>
-            </h1>
-        </div>
+             <div class="logo-container">
+                <h1 class="logo">
+                    PlanClub
+                    <span>BAR</span>
+                </h1>
+            </div> <div class="menu-list">
+            <a href="{{ url_for('perfil') }}"   class="btn">✨ Perfil</a>
+            <a href="{{ url_for('chat') }}"     class="btn">💬 Chat</a>
+            <a href="{{ url_for('reserva') }}"  class="btn">📅 Hacer Reserva</a>
+            <a href="{{ url_for('catalogo') }}" class="btn">🏠 Catálogo</a> <a href="{{ url_for('index') }}"    class="btn">🚪 Cerrar Sesión</a>
+        </div> </div>
  
-        <div class="menu-list">
-            <a href="../../templates/html/perfil.html"   class="btn">✨ Perfil</a>
-            <a href="../../templates/html/chat.html"     class="btn">💬 Chat</a>
-            <a href="../../templates/html/reserva.html"  class="btn">📅 Hacer Reserva</a>
-            <a href="../../templates/html/catalogo.html" class="btn">🏠 Catálogo</a>
-            <a href="../../../../index.html"       class="btn">🚪 Cerrar Sesión</a>
-        </div>
- 
-    </div>
- 
-    <script src="../../static/js/inicio.js"></script>
+    <script src="{{ url_for('static', filename='js/inicio.js') }}"></script>
 </body>
 </html>

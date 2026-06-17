@@ -4,7 +4,7 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>PLANCLUB — VIP Chat</title>
-  <link rel="stylesheet" href="../../static/css/chat.css"/>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/chat.css') }}"/>
 </head>
 
 <body> 
@@ -171,7 +171,7 @@
   <style>
         body {      
     /* Esta línea añade una capa negra con 70% de opacidad sobre tu imagen */
-    background-image: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('../../static/img/fondo.png');        
+    background-image: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url("{{ url_for('static', filename='img/fondo.png') }}");       
     background-repeat: no-repeat;      
     background-size: cover;        
     background-position: center;           
@@ -179,12 +179,8 @@
     font-family: sans-serif;
     color: #ffffff; /* Cambiado a blanco para contrastar con el fondo oscuro */
 }
-
-
-    
- }
     </style>
 
-  <script type="module" src="../../static/js/chat.js"></script>
+  <script type="module" src="{{ url_for('static', filename='js/chat.js') }}"></script>
 </body>
 </html>
