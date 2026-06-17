@@ -14,7 +14,8 @@ def create_app():
 
     db.init_app(app)
 
-    from app.routes import bp as main_bp
+    # 🛠️ CORREGIDO: Importamos 'main' (que es el nombre que le dimos en routes.py)
+    from app.routes import main as main_bp
     app.register_blueprint(main_bp)
 
     with app.app_context():

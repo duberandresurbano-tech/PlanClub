@@ -1,0 +1,29 @@
+# --- Variables de Entorno (SECRETOS) ---
+.env
+instance/
+dist/
+build/
+
+# --- Base de Datos Local ---
+# Ignoramos la base de datos local para que cada quien tenga sus datos de prueba
+*.db
+*.sqlite3
+
+# --- Archivos de Python (Basura de ejecución) ---
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+
+# --- Entorno Virtual ---
+.venv/
+venv/
+env/
+ENV/
+
+# --- Archivos del Sistema / Editores ---
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
