@@ -97,7 +97,7 @@ function generarMapaMesas() {
         { id: 10, x: 56, y: 54 }   // Frente de pista VIP Derecha
     ];
 
-    posiciones.forEach((pos, index) => {
+    positions = posiciones.forEach((pos, index) => {
         const mesa = document.createElement('div');
         const claseAleatoria = clasesMesas[index % clasesMesas.length];
         
@@ -111,7 +111,6 @@ function generarMapaMesas() {
         if (mesasOcupadasHoy.includes(pos.id)) {
             mesa.classList.add('ocupada');
             mesa.innerText = '❌';
-            // No le asignamos onclick para que el botón gris quede totalmente inhabilitado
         } else {
             // Mesa libre disponible para interactuar
             mesa.onclick = function() {
@@ -129,7 +128,6 @@ function generarMapaMesas() {
                         mesasSeleccionadas = mesasSeleccionadas.filter(id => id !== pos.id);
                         mesa.classList.remove('selected');
                     } else {
-                        // Mensaje Exacto Solicitado corregido
                         if (mesasSeleccionadas.length >= 4) {
                             mostrarFeedback("⚠️ El maximo de mesas permitido por reserva es de 4.", true);
                             return; 
@@ -240,7 +238,7 @@ function procesarPasoFecha() {
 function selectPay(elemento, metodo) {
     document.querySelectorAll('.metodo-pago').forEach(item => item.classList.remove('active'));
     elemento.classList.add('active');
-    metodoPagoSelected = metodo;
+    metodoPagoSeleccionado = metodo;
 }
 
 /**
@@ -252,13 +250,9 @@ function confirmarReservaFinal() {
         return;
     }
 
-    // Calcular el total monetario para meterlo al historial
     const totalTexto = document.getElementById('txt-total').innerText;
-
-    // Obtener historial viejo, empujar la nueva reserva y sobreescribir el LocalStorage
     const historial = JSON.parse(localStorage.getItem('historial_reservas')) || [];
     
-    // Si ya existía una reserva del mismo usuario en ese mismo día, unificamos las mesas, si no creamos un registro nuevo
     const registroExistente = historial.find(r => r.fecha === fechaSeleccionada);
     if (registroExistente) {
         registroExistente.mesas = [...registroExistente.mesas, ...mesasSeleccionadas];
@@ -275,11 +269,12 @@ function confirmarReservaFinal() {
 
     mostrarFeedback("🎉 ¡Reserva procesada con éxito!", false);
     
-    // RECOMIENDA E INICIA NUEVO FLUJO EN RESERVA.HTML
+    // 🛠️ CORREGIDO: Redirección limpia al endpoint lógico de Flask para reiniciar la vista
     setTimeout(() => {
-        window.location.href = "reserva.html"; 
+        window.location.href = "/reserva"; 
     }, 2500);
 }
+
 function renderizarMisReservas() {
     const contenedor = document.getElementById('reserva-container');
     if (!contenedor) return;
@@ -287,51 +282,33 @@ function renderizarMisReservas() {
     contenedor.innerHTML = ""; 
     const historial = JSON.parse(localStorage.getItem('historial_reservas')) || [];
 
-    // --- BOTÓN DE PÁNICO (REFORZADO) ---
+    // --- BOTÓN DE PÁNICO ---
     const btnReset = document.createElement('button');
     btnReset.innerText = "Borrar Todo";
     btnReset.style.position = "fixed";
     btnReset.style.bottom = "20px";
     btnReset.style.right = "20px";
-    btnReset.style.zIndex = "999999"; // Fuerza a que esté arriba de todo
+    btnReset.style.zIndex = "999999"; 
     btnReset.style.padding = "10px";
     btnReset.style.opacity = "0.15";
     btnReset.style.cursor = "pointer";
     btnReset.style.transition = "opacity 0.3s";
-    
-    btnReset.style.opacity = "0.15";
 
-    btnReset.onmouseover = () => {
-        btnReset.style.opacity = "1";
-    };
-
-    btnReset.onmouseout = () => {
-        btnReset.style.opacity = "0.15";
-    };
+    btnReset.onmouseover = () => { btnReset.style.opacity = "1"; };
+    btnReset.onmouseout = () => { btnReset.style.opacity = "0.15"; };
     
     btnReset.onclick = function(e) {
-    e.preventDefault();
-
-    console.log("Intentando borrar...");
-
-    if (confirm("¿Estás 100% seguro de borrar TODAS las reservas?")) {
-
-        if (confirm("Esta acción dejará todas las mesas libres. ¿Deseas continuar?")) {
-
-            localStorage.removeItem('historial_reservas');
-
-            localStorage.setItem(
-                'historial_reservas',
-                JSON.stringify([])
-            );
-
-            alert("Todas las reservas fueron eliminadas correctamente.");
-
-            location.reload();
+        e.preventDefault();
+        if (confirm("¿Estás 100% seguro de borrar TODAS las reservas?")) {
+            if (confirm("Esta acción dejará todas las mesas libres. ¿Deseas continuar?")) {
+                localStorage.removeItem('historial_reservas');
+                localStorage.setItem('historial_reservas', JSON.stringify([]));
+                alert("Todas las reservas fueron eliminadas correctamente.");
+                location.reload();
+            }
         }
-    }
-};
-    document.body.appendChild(btnReset); // Lo movemos al body para que nada lo bloquee
+    };
+    document.body.appendChild(btnReset);
     // --------------------------------------
 
     if (historial.length === 0) {

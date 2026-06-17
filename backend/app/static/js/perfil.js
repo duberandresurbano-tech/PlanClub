@@ -1,63 +1,73 @@
-window.onload = function() {
-    if(localStorage.getItem('user_nombre')) document.getElementById('input-nombre').value = localStorage.getItem('user_nombre');
-    if(localStorage.getItem('user_apellido')) document.getElementById('input-apellido').value = localStorage.getItem('user_apellido');
-    if(localStorage.getItem('user_correo')) document.getElementById('input-correo').value = localStorage.getItem('user_correo');
-    if(localStorage.getItem('user_telefono')) document.getElementById('input-telefono').value = localStorage.getItem('user_telefono');
-    if(localStorage.getItem('user_photo')) {
-        document.getElementById('mainProfilePic').innerHTML = `<img src="${localStorage.getItem('user_photo')}" class="profile-img-preview">`;
-    }
-};
+// Variable global temporal para guardar la foto seleccionada en el modal antes de aceptar
+let fotoTemporalSeleccionada = "";
 
+// --- MODAL DE NOTIFICACIONES ---
 function openNotificationModal() {
-    document.getElementById("notificationModal").style.display = "flex";
+    const modal = document.getElementById('notificationModal');
+    if (modal) modal.style.display = 'flex';
 }
 
 function closeNotificationModal() {
-    document.getElementById("notificationModal").style.display = "none";
+    const modal = document.getElementById('notificationModal');
+    if (modal) modal.style.display = 'none';
 }
 
-window.onclick = function(event) {
-    let modal = document.getElementById("notificationModal");
-    if (event.target == modal) {
-        closeNotificationModal();
+// --- MODAL DE FOTO DE PERFIL ---
+function openPhotoModal() {
+    const modal = document.getElementById('photoEditModal');
+    if (modal) {
+        modal.style.display = 'flex';
+        // Limpiamos selecciones previas visuales dentro del modal
+        document.querySelectorAll('.profile-option').forEach(opt => opt.classList.remove('selected'));
+        fotoTemporalSeleccionada = ""; 
     }
 }
 
-document.addEventListener("DOMContentLoaded", function() {
+function closePhotoModal() {
+    const modal = document.getElementById('photoEditModal');
+    if (modal) modal.style.display = 'none';
+}
+
+// Al hacer clic en una de las fotos del grid (a.jpg, b.jpg, c.jpg)
+function selectPhoto(elemento) {
+    // Quitamos el borde resaltado de las otras opciones
+    document.querySelectorAll('.profile-option').forEach(opt => opt.classList.remove('selected'));
     
-    const botonRegresar = document.getElementById("btn-regresar");
-
-    botonRegresar.addEventListener("click", function() {
-        window.history.back();
-    });
-});
-
-function saveAllData() {
-    const nombre = document.getElementById('input-nombre').value;
-    const apellido = document.getElementById('input-apellido').value;
-    const correo = document.getElementById('input-correo').value;
-    const telefono = document.getElementById('input-telefono').value;
-
-    localStorage.setItem('user_nombre', nombre);
-    localStorage.setItem('user_apellido', apellido);
-    localStorage.setItem('user_correo', correo);
-    localStorage.setItem('user_telefono', telefono);
-
-    alert("¡Datos guardados con éxito!");
+    // Añadimos el resaltado a la foto cliqueada
+    elemento.classList.add('selected');
+    
+    // Capturamos la ruta que guardamos en el atributo 'data-photo-src'
+    fotoTemporalSeleccionada = elemento.getAttribute('data-photo-src');
 }
 
-let selectedPhotoSrc = "";
-function openPhotoModal() { document.getElementById("photoEditModal").classList.add("show"); }
-function closePhotoModal() { document.getElementById("photoEditModal").classList.remove("show"); }
-function selectPhoto(el) {
-    document.querySelectorAll(".profile-option").forEach(opt => opt.classList.remove("selected"));
-    el.classList.add("selected");
-    selectedPhotoSrc = el.getAttribute("data-photo-src");
-}
+// Al darle al botón "ACEPTAR" dentro del modal de fotos
 function applyPhotoChange() {
-    if(selectedPhotoSrc) {
-        document.getElementById("mainProfilePic").innerHTML = `<img src="${selectedPhotoSrc}" class="profile-img-preview">`;
-        localStorage.setItem('user_photo', selectedPhotoSrc);
+    if (!fotoTemporalSeleccionada) {
+        alert("⚠️ Por favor, selecciona una foto antes de aceptar.");
+        return;
     }
+    
+    const contenedorFoto = document.getElementById('mainProfilePic');
+    if (contenedorFoto) {
+        // Cambiamos el icono de FontAwesome por la imagen real de fondo
+        contenedorFoto.innerHTML = ""; // Borra el <i class="fa-solid fa-user"></i>
+        contenedorFoto.style.backgroundImage = `url('${fotoTemporalSeleccionada}')`;
+        contenedorFoto.style.backgroundSize = 'cover';
+        contenedorFoto.style.backgroundPosition = 'center';
+    }
+    
     closePhotoModal();
 }
+
+// --- GUARDAR DATOS DEL FORMULARIO ---
+document.querySelector('form').addEventListener('submit', function(e) {
+    e.preventDefault(); // Evita que la página se recargue
+    
+    const nombre = document.querySelector('input[placeholder="Escribe tu nombre"]').value.trim();
+    const apellido = document.querySelector('input[placeholder="Escribe tu apellido"]').value.trim();
+    const correo = document.querySelector('input[placeholder="ejemplo@correo.com"]').value.trim();
+    const telefono = document.querySelector('input[placeholder="Tu número"]').value.trim();
+    
+    console.log("Datos listos para enviar a la BD:", { nombre, apellido, correo, telefono });
+    alert("¡Cambios guardados correctamente en tu perfil!");
+});

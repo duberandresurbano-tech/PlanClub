@@ -75,7 +75,8 @@ function manejadorBotonSuperior() {
     if (pantallaActual === 'pedido') {
         regresar();
     } else {
-        window.location.href = "../inicio.html"; 
+        // 🛠️ CORREGIDO: Ya no busca el archivo HTML en el disco sino la ruta limpia de Flask
+        window.location.href = "/inicio"; 
     }
 }
 
