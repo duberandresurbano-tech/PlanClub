@@ -1,37 +1,42 @@
 from flask import Blueprint, jsonify, request, render_template
 from app.models import db, Usuario
 
-bp = Blueprint('main', __name__)
+# 🛠️ CORREGIDO: Cambiamos 'bp' por 'main' para que coincida con tus url_for del HTML
+main = Blueprint('main', __name__)
 
-# 1. RUTA RAÍZ: Renderiza index.html (pantalla de Login/Registro)
-@bp.route('/')
+# 1. RUTA RAÍZ
+@main.route('/')
 def index():
     return render_template('html/index.html')
 
-# 2. RUTAS DE NAVEGACIÓN
-@bp.route('/inicio')
+# 2. RUTAS DE NAVEGACIÓN (URLs limpias con @main.route)
+@main.route('/inicio')
 def inicio():
     return render_template('html/inicio.html')
 
-@bp.route('/catalogo')
+@main.route('/catalogo')
 def catalogo():
     return render_template('html/catalogo.html')
 
-@bp.route('/chat')
+@main.route('/login')
+def login():
+    return render_template('html/login.html')
+
+@main.route('/chat')
 def chat():
     return render_template('html/chat.html')
 
-@bp.route('/perfil')
+@main.route('/perfil')
 def perfil():
     return render_template('html/perfil.html')
 
-@bp.route('/reserva')
+@main.route('/reserva')
 def reserva():
     return render_template('html/reserva.html')
 
 
-# 3. RUTA DE PRUEBA: Crear usuario en la DB
-@bp.route('/crear-usuario-prueba', methods=['GET'])
+# 3. RUTA DE PRUEBA: Mantenemos intacta tu ruta para meter el usuario a la DB
+@main.route('/crear-usuario-prueba', methods=['GET'])
 def crear_usuario():
     try:
         nuevo_usuario = Usuario(
