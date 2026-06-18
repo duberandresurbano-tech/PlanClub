@@ -13,9 +13,7 @@
   <div class="grid-overlay"></div>
   <div class="toast-container" id="toast-container"></div>
 
-  <!-- ══════════════════════════════════════════════
-       PANTALLA 1: ACCESO (Login / Seleccisón de modo)
-       ══════════════════════════════════════════════ -->
+  <!-- PANTALLA 1: ACCESO -->
   <div id="screen-access" class="screen active">
     <div class="access-container">
 
@@ -84,9 +82,7 @@
     </div>
   </div>
 
-  <!-- ══════════════════════════════════════════════
-       PANTALLA 2: ESPERA (Lobby - solo host)
-       ══════════════════════════════════════════════ -->
+  <!-- PANTALLA 2: ESPERA (Lobby) -->
   <div id="screen-espera" class="screen">
     <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; height:100%; gap:28px; padding:24px;">
       <div class="brand-logo">
@@ -112,13 +108,10 @@
     </div>
   </div>
 
-  <!-- ══════════════════════════════════════════════
-       PANTALLA 3: CHAT  ACTIVO
-       ══════════════════════════════════════════════ -->
+  <!-- PANTALLA 3: CHAT ACTIVO -->
   <div id="screen-chat" class="screen">
     <div class="chat-layout">
 
-      <!-- Header -->
       <div class="chat-header">
         <div class="header-avatar" id="chat-peer-avatar">?</div>
         <div class="header-info">
@@ -138,10 +131,8 @@
         </button>
       </div>
 
-      <!-- Área de mensajes -->
       <div class="messages-area" id="chat-messages"></div>
 
-      <!-- Barra de input -->
       <div class="input-bar locked" id="input-bar">
         <input class="msg-input" id="msg-input" type="text" placeholder="Escribe un mensaje VIP..." autocomplete="off"/>
         <button class="send-btn" id="btn-send" title="Enviar">
@@ -169,17 +160,16 @@
   </div>
 
   <style>
-        body {      
-    /* Esta línea añade una capa negra con 70% de opacidad sobre tu imagen */
-    background-image: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url("{{ url_for('static', filename='img/fondo.png') }}");       
-    background-repeat: no-repeat;      
-    background-size: cover;        
-    background-position: center;           
-    background-attachment: fixed;        
-    font-family: sans-serif;
-    color: #ffffff; /* Cambiado a blanco para contrastar con el fondo oscuro */
-}
-    </style>
+    body {      
+      background-image: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url("{{ url_for('static', filename='img/fondo.png') }}");       
+      background-repeat: no-repeat;      
+      background-size: cover;        
+      background-position: center;           
+      background-attachment: fixed;        
+      font-family: sans-serif;
+      color: #ffffff;
+    }
+  </style>
 
   <script type="module" src="{{ url_for('static', filename='js/chat.js') }}"></script>
 </body>

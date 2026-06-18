@@ -20,10 +20,10 @@
             </div>
         </button>
         <div id="settings-menu" class="settings-menu">
-            <button onclick="window.location.href=`{{ url_for('perfil') }}`">👤 Ver mi Perfil</button>
-            <button onclick="window.location.href=`{{ url_for('catalogo') }}`">📋 Ver Catálogo</button>
-            <button onclick="window.location.href=`{{ url_for('chat') }}`">💬 Ir al Chat</button>
-            <button onclick="window.location.href=`{{ url_for('index') }}`" style="color: #ff6b6b;">🚪 Cerrar Sesión</button>
+            <button onclick="window.location.href='{{ url_for('main.perfil') }}'">👤 Ver mi Perfil</button>
+            <button onclick="window.location.href='{{ url_for('main.catalogo') }}'">📋 Ver Catálogo</button>
+            <button onclick="window.location.href='{{ url_for('main.chat') }}'">💬 Ir al Chat</button>
+            <button onclick="window.location.href='{{ url_for('main.index') }}'" style="color: #ff6b6b;">🚪 Cerrar Sesión</button>
         </div>
     </div>
 
@@ -37,7 +37,7 @@
             <div class="menu-list">
                 <button class="menu-btn" onclick="cambiarVista('view-form')"><span>✨ Nueva Reserva</span><span>→</span></button>
                 <button class="menu-btn" onclick="cambiarVista('view-list')"><span>📅 Mis Reservas</span><span>→</span></button>
-                <button class="menu-btn" onclick="window.location.href=`{{ url_for('inicio') }}`"><span>🏠 Volver al Inicio</span><span>→</span></button>
+                <button class="menu-btn" onclick="window.location.href='{{ url_for('main.inicio') }}'"><span>🏠 Volver al Inicio</span><span>→</span></button>
             </div>
         </div>
 

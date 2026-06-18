@@ -77,7 +77,6 @@
 <body>
 
   <div id="splash">
-
       <svg width="0" height="0" style="position:absolute">
         <filter id="gooey">
           <feGaussianBlur in="SourceGraphic" stdDeviation="10" />
@@ -99,8 +98,9 @@
       </div>
 
       <img class="logo-reveal" id="logoReveal" src="{{ url_for('static', filename='img/logo.png') }}" alt="PlanClub">
+  </div>
 
-  </div> <div class="secret-trigger" onclick="abrirAdmin()"></div>
+  <div class="secret-trigger" onclick="abrirAdmin()"></div>
 
     <div class="logo-container">
         <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Logo" class="logo-image">
