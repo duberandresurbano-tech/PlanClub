@@ -346,7 +346,7 @@ html, body {
 .enter-btn:active  { transform: translateY(0); }
 .enter-btn:disabled { opacity: 0.5; pointer-events: none; }
 
-/* ── Código de sala ─────────────────────────────────────── */
+/* ── Código de sala ────────────────────────────────────── */
 .code-display-box {
   background: rgba(10,7,1,0.55);
   border: 1px solid rgba(245,199,71,0.18);
