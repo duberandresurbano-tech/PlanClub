@@ -1,5 +1,8 @@
 import os
-from app import app  # <--- Agrega esta línea exacta para importar tu Flask app
+from app import create_app  # <--- Cambiamos esto para importar la función
+
+# Creamos la aplicación llamando a la función de fábrica
+app = create_app()
 
 if __name__ == '__main__':
     # Render asigna un puerto dinámico en la variable de entorno PORT
