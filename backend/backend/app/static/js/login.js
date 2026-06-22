@@ -124,13 +124,9 @@ function validarLogin() {
         return;
     }
 
-   if (passIn === savedPass) {
+    if (passIn === savedPass) {
         msg.style.color = "#4dff88"; 
         msg.innerText = "Usuario correcto ingresando.";
-        
-        // 💾 NUEVO: Guardamos el nombre de sesión activo para el Chat, Perfil, etc.
-        // Usamos la misma clave 'userName' para que tus otros archivos JS independientes lo lean sin problemas.
-        localStorage.setItem('userName', savedUser);
         
         // 🛠️ RUTA CORREGIDA: Apunta al endpoint lógico de Flask para ir al Inicio
         setTimeout(() => { window.location.href = "/inicio"; }, 1500);
@@ -189,19 +185,3 @@ function togglePassword(inputId, icon) {
         icon.textContent = "🙈";
     }
 }
-
-
-// --- seccion chat (keni) ---
-
-// --- MOSTRAR/OCULTAR CONTRASEÑA ---
-function togglePassword(inputId, icon) {
-    const input = document.getElementById(inputId);
-    if (input.type === "password") {
-        input.type = "text";
-        icon.textContent = "🐵";
-    } else {
-        input.type = "password";
-        icon.textContent = "🙈";
-    }
-}
-// ¡Tu archivo login.js debe terminar aquí! No agregues los listeners del chat en este punto.put

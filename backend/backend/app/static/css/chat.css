@@ -115,19 +115,9 @@ html, body {
    PANTALLA DE ACCESO
    ══════════════════════════════════════════════════════════ */
 #screen-access {
-  display: none; /* Se cambia a active con JS */
   align-items: center;
   justify-content: center;
-  position: fixed; 
-  inset: 0; 
-  z-index: 10;
-  width: 100vw;
-  height: 100vh;
   overflow-y: auto;
-}
-
-#screen-access.active {
-  display: flex; /* Asegura el centrado flexible activo */
 }
 
 .access-container {

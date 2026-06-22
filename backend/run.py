@@ -1,8 +1,7 @@
-from app import create_app
-
-app = create_app()
+import os
 
 if __name__ == '__main__':
-    # host='0.0.0.0' hace que el servidor escuche en toda tu red local
-    # port=5000 es el puerto estándar
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    # Render asigna un puerto dinámico en la variable de entorno PORT
+    puerto = int(os.environ.get("PORT", 5000))
+    # Escucha en 0.0.0.0 para recibir peticiones externas
+    app.run(host='0.0.0.0', port=puerto)
