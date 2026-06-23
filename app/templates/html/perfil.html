@@ -11,7 +11,7 @@
 
     <div class="phone">
     <form class="profile-card">
-        <a href="{{ url_for('main.inicio') }}" id="btn-regresar" class="btn-regresar" style="text-decoration: none;"> ⬅ </a>
+        <a href="{{ url_for('main.inicio') }}" id="btn-regresar" class="btn-regresar" aria-label="Atrás"><i class="fa-solid fa-arrow-left"></i></a>
         <a href="#" class="top-icon right" onclick="openNotificationModal()"><i class="fa-solid fa-bell"></i></a>
 
         <div class="profile-avatar-container">
@@ -54,16 +54,12 @@
         <p style="font-weight: bold; letter-spacing: 0.1em;">ELEGIR FOTO DE PERFIL</p>
         
         <div class="photo-grid">
-            <div class="profile-option" data-photo-src="{{ url_for('static', filename='img/a.jpg') }}" onclick="selectPhoto(this)">
-                <img src="{{ url_for('static', filename='img/a.jpg') }}">
+            <div class="profile-option" data-photo-src="{{ url_for('static', filename='img/icono_hombre.png') }}" onclick="selectPhoto(this)">
+                <img src="{{ url_for('static', filename='img/icono_hombre.png') }}">
             </div>
-            <div class="profile-option" data-photo-src="{{ url_for('static', filename='img/b.jpg') }}" onclick="selectPhoto(this)">
-                <img src="{{ url_for('static', filename='img/b.jpg') }}">
+            <div class="profile-option" data-photo-src="{{ url_for('static', filename='img/icono_mujer.png') }}" onclick="selectPhoto(this)">
+                <img src="{{ url_for('static', filename='img/icono_mujer.png') }}">
             </div>
-            <div class="profile-option" data-photo-src="{{ url_for('static', filename='img/c.jpg') }}" onclick="selectPhoto(this)">
-                <img src="{{ url_for('static', filename='img/c.jpg') }}">
-            </div>
-
             <div class="profile-option upload-option" onclick="triggerGallerUpload()">
                 <div class="upload-box">
                     <i class="fa-solid fa-plus"></i>

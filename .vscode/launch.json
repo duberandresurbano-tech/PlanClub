@@ -17,6 +17,12 @@
                     "path": "${workspaceFolder}"
                 }
             ]
+        },
+        {
+            "type": "msedge",
+            "name": "http://127.0.0.1:3000/app/templates/html/perfil.html",
+            "request": "launch",
+            "url": "http://127.0.0.1:3000/app/templates/html/perfil.html"
         }
     ]
 }
