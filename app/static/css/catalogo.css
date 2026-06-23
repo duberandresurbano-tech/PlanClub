@@ -67,10 +67,10 @@ body {
     background: conic-gradient(
         from 0deg,
         transparent 10%,
-        #03f0e8 25%,
+        #ffd700 25%,
         #ffd700 45%,
-        #ff0055 60%,
-        #0080ff 75%,
+        #ffd700 60%,
+        #ffd700 75%,
         transparent 90%
     );
     animation: rotarLuz 2.8s linear infinite;
@@ -219,7 +219,7 @@ header {
     margin: 0 auto;
 }
 .content-scroll::-webkit-scrollbar { width: 5px; }
-.content-scroll::-webkit-scrollbar-thumb { background: linear-gradient(#ffd700, #03f0e8); border-radius: 10px; }
+.content-scroll::-webkit-scrollbar-thumb { background: linear-gradient(#ffd700, #ffd700); border-radius: 10px; }
 
 /* --- CATÁLOGO --- */
 .section-title {
@@ -238,7 +238,7 @@ header {
     content: '';
     flex: 1;
     height: 1px;
-    background: linear-gradient(90deg, #ffd700, #03f0e8, transparent);
+    background: linear-gradient(90deg, #ffd700, #ffd700, transparent);
 }
 
 .products-grid {

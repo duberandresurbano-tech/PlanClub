@@ -481,6 +481,9 @@ $("msg-input").addEventListener("keydown", e => {
   if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); enviarMensaje(); }
 });
 
+$("btn-regresar-chat").addEventListener("click", () => {
+  window.location.href = "/inicio"; // Regresar a inicio
+});
 $("btn-salir-chat").addEventListener("click", mostrarModalSalir);
 $("btn-confirmar-salir").addEventListener("click", confirmarSalir);
 $("btn-cancelar-salir").addEventListener("click", ocultarModalSalir);

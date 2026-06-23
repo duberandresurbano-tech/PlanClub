@@ -1,28 +1,32 @@
 {
-    // Use IntelliSense para saber los atributos posibles.
-    // Mantenga el puntero para ver las descripciones de los existentes atributos.
-    // Para más información, visite: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "Python: Run PlanClub",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/run.py",
+            "console": "integratedTerminal",
+            "cwd": "${workspaceFolder}",
+            "env": {
+                "FLASK_ENV": "development"
+            }
+        },
+        {
             "type": "firefox",
             "request": "launch",
-            "name": "Iniciar Firefox para PlanClub",
+            "name": "Abrir Firefox",
             "url": "http://127.0.0.1:5050",
             "webRoot": "${workspaceFolder}",
             "reAttach": true,
-            "pathMappings": [
-                {
-                    "url": "http://127.0.0.1:5050",
-                    "path": "${workspaceFolder}"
-                }
-            ]
-        },
+            "preLaunchTask": "wait-for-flask"
+        }
+    ],
+    "compounds": [
         {
-            "type": "msedge",
-            "name": "http://127.0.0.1:3000/app/templates/html/perfil.html",
-            "request": "launch",
-            "url": "http://127.0.0.1:3000/app/templates/html/perfil.html"
+            "name": "PlanClub (Flask + Firefox)",
+            "configurations": ["Python: Run PlanClub", "Abrir Firefox"],
+            "stopAll": true
         }
     ]
 }

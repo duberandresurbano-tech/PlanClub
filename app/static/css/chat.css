@@ -511,6 +511,8 @@ html, body {
 }
 .icon-btn:hover { border-color: rgba(255,68,85,0.45); color: var(--red); box-shadow: 0 0 12px rgba(255,68,85,0.18); }
 
+
+
 /* Área de mensajes */
 .messages-area {
   flex: 1; overflow-y: auto;
