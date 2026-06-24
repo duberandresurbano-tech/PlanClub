@@ -204,4 +204,34 @@ function togglePassword(inputId, icon) {
         icon.textContent = "🙈";
     }
 }
+function borrarTodo() {
+
+    if (!confirm("¿Seguro que deseas borrar todos los datos almacenados?")) {
+        return;
+    }
+
+    localStorage.removeItem('pc_user');
+    localStorage.removeItem('pc_pass');
+    localStorage.removeItem('pc_telefono');
+    localStorage.removeItem('pc_correo');
+    localStorage.removeItem('pc_fecha_nac');
+    localStorage.removeItem('userName');
+
+    const display = document.getElementById('currentUserDisplay');
+
+    if (display) {
+        display.innerText = "Ninguno";
+    }
+
+    alert("Memoria borrada correctamente");
+}
+function abrirAdmin() {
+
+    const usuario = localStorage.getItem('pc_user');
+
+    document.getElementById('currentUserDisplay').innerText =
+        usuario || "Ninguno";
+
+    showPanel('adminPanel');
+}
 // ¡Tu archivo login.js debe terminar aquí! No agregues los listeners del chat en este punto.put
