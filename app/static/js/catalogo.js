@@ -196,6 +196,8 @@ function regresar() {
     const scrPedido = document.getElementById('pedido');
     const modal = document.getElementById('modal-confirmacion');
     
+    // Cerrar el modal de confirmación
+    document.getElementById('overlay').style.display = 'none';
     
     scrPedido.style.opacity = '0';
     scrPedido.style.transform = 'scale(0.95)';

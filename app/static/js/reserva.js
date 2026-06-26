@@ -192,18 +192,6 @@ function mostrarModalExito(titulo, mensaje) {
 }
 
 /**
- * 1. INICIALIZACIÓN DE BASE DE DATOS SIMULADA (HISTORIAL DE OCUPACIÓN)
- * Si no existe un historial en el navegador, creamos uno con datos de prueba.
- */
-if (!localStorage.getItem('historial_reservas')) {
-    const datosInicialesDePrueba = [
-        { fecha: "16/06/2026", mesas: [3, 4], personas: 3, total: "$40.000 COP" },
-        { fecha: "17/06/2026", mesas: [7, 8, 9], personas: 6, total: "$60.000 COP" }
-    ];
-    localStorage.setItem('historial_reservas', JSON.stringify(datosInicialesDePrueba));
-}
-
-/**
  * MÁSCARA AUTOMÁTICA PARA EL FORMATO DD/MM/YYYY
  */
 function mascaraFecha(input) {
@@ -249,14 +237,14 @@ function cambiarVista(idVista) {
 /**
  * PUNTO 1 & 3: GENERACIÓN REALISTA DEL PLANO (10 MESAS COMPLETAS + COMPORTAMIENTO POR FECHA)
  */
-function generarMapaMesas() {
+async function generarMapaMesas() {
     const plano = document.getElementById('mapa-discoteca');
     if (!plano) return;
-    
+
     // Limpiar mesas viejas antes de redibujar
     const mesasExistentes = plano.querySelectorAll('.mesa');
     mesasExistentes.forEach(m => m.remove());
-    
+
     mesasSeleccionadas = []; // Reiniciar carrito de selección
 
     // Función para obtener el precio según el ID de la mesa
@@ -283,13 +271,30 @@ function generarMapaMesas() {
         return { tipo: 'Estándar', capacidad: 4 };
     }
 
-    // Obtener las reservas existentes desde el LocalStorage para saber cuáles bloquear hoy
-    const historial = JSON.parse(localStorage.getItem('historial_reservas')) || [];
-    
-    // Buscamos si hay registros de ocupación específicamente para la fecha seleccionada
-    const reservaDelDia = historial.find(r => r.fecha === fechaSeleccionada);
-    // Si encontramos reservas, extraemos los números de las mesas ocupadas; si no, queda vacío []
-    const mesasOcupadasHoy = reservaDelDia ? reservaDelDia.mesas : [];
+    // Obtener mesas disponibles del backend
+    let mesasDisponibles = [];
+    try {
+        const response = await fetch('/api/mesas/todas');
+        const data = await response.json();
+        if (response.ok && data.mesas) {
+            mesasDisponibles = data.mesas;
+        }
+    } catch (error) {
+        console.error('Error al obtener mesas del backend:', error);
+        // En caso de error, usar localStorage como respaldo
+        const historial = JSON.parse(localStorage.getItem('historial_reservas')) || [];
+        const reservaDelDia = historial.find(r => r.fecha === fechaSeleccionada);
+        const mesasOcupadasHoy = reservaDelDia ? reservaDelDia.mesas : [];
+        // Crear mesas por defecto si falla el backend
+        mesasDisponibles = [];
+        for (let i = 1; i <= 10; i++) {
+            mesasDisponibles.push({
+                id_mesa: i.toString(),
+                numero: i,
+                estado: mesasOcupadasHoy.includes(i) ? 'Reservada' : 'Disponible'
+            });
+        }
+    }
 
     // Coordenadas premium en porcentaje para ubicar de forma envolvente las 10 mesas libres
     const posiciones = [
@@ -305,27 +310,30 @@ function generarMapaMesas() {
         { id: 5, x: 56, y: 54 }    // Frente de pista VIP Derecha
     ];
 
-    positions = posiciones.forEach((pos, index) => {
+    posiciones.forEach((pos) => {
         const mesa = document.createElement('div');
-        
+
         // Asignar clases por rango de ID
         let claseColor;
         if (pos.id === 1 || pos.id === 2) {
-            claseColor = 'm-y'; 
+            claseColor = 'm-y';
         } else if (pos.id >= 3 && pos.id <= 6) {
-            claseColor = 'm-b'; 
+            claseColor = 'm-b';
         } else if (pos.id >= 7 && pos.id <= 10) {
-            claseColor = 'm-t'; 
+            claseColor = 'm-t';
         }
-        
+
         mesa.className = `mesa ${claseColor}`;
         mesa.innerText = `M-${pos.id}`;
-        
+
         mesa.style.left = `${pos.x}%`;
         mesa.style.top = `${pos.y}%`;
-        
-        // CONDICIONAL DINÁMICA: Si la mesa está guardada como ocupada en esta fecha
-        if (mesasOcupadasHoy.includes(pos.id)) {
+
+        // Verificar estado de la mesa desde el backend
+        const mesaData = mesasDisponibles.find(m => m.numero === pos.id);
+        const estaDisponible = mesaData && mesaData.estado === 'Disponible';
+
+        if (!estaDisponible) {
             mesa.classList.add('ocupada');
             mesa.innerText = '❌';
         } else {
@@ -333,12 +341,12 @@ function generarMapaMesas() {
             mesa.onclick = function() {
                 mostrarFeedback("", false); // Limpiar errores visuales previos
 
-                // Regala 1: De 1 a 4 personas -> Solo permite 1 mesa única
+                // Regla 1: De 1 a 4 personas -> Solo permite 1 mesa única
                 if (cantidadPersonas <= 4) {
                     document.querySelectorAll('.mesa').forEach(m => m.classList.remove('selected'));
                     mesasSeleccionadas = [pos.id];
                     mesa.classList.add('selected');
-                } 
+                }
                 // Regla 2: De 5 a 10 personas -> Selección múltiple con tope estricto de 4
                 else {
                     if (mesasSeleccionadas.includes(pos.id)) {
@@ -347,18 +355,18 @@ function generarMapaMesas() {
                     } else {
                         if (mesasSeleccionadas.length >= 4) {
                             mostrarFeedback("⚠️ El maximo de mesas permitido por reserva es de 4.", true);
-                            return; 
+                            return;
                         }
                         mesasSeleccionadas.push(pos.id);
                         mesa.classList.add('selected');
                     }
                 }
-                
+
                 // Actualizar desglose de cobro en pantalla
                 const info = document.getElementById('map-info');
                 const txtMesa = document.getElementById('txt-mesas');
                 const txtTotal = document.getElementById('txt-total');
-                
+
                 if (info && txtMesa && txtTotal) {
                     if (mesasSeleccionadas.length > 0) {
                         const mesasInfo = mesasSeleccionadas.map(id => {
@@ -423,7 +431,7 @@ function validarFecha(fechaInput) {
 /**
  * ACCIÓN DEL BOTÓN CONTINUAR RESERVACIÓN
  */
-function procesarPasoFecha() {
+async function procesarPasoFecha() {
     let inputFecha = document.getElementById('input-fecha').value;
     const inputPersonas = document.getElementById('personas').value;
 
@@ -450,13 +458,13 @@ function procesarPasoFecha() {
         return;
     }
 
-    fechaSeleccionada = inputFecha; 
-    cantidadPersonas = numPersonas; 
-    
-    mostrarFeedback("", false); 
-    
-    generarMapaMesas();
-    cambiarVista('view-map'); 
+    fechaSeleccionada = inputFecha;
+    cantidadPersonas = numPersonas;
+
+    mostrarFeedback("", false);
+
+    await generarMapaMesas();
+    cambiarVista('view-map');
 }
 
 /**
@@ -471,47 +479,184 @@ function selectPay(elemento, metodo) {
 /**
  * PUNTO 2 & 3: PROCESAR PAGO Y PERSISTENCIA DE DATOS LOCALES
  */
-function confirmarReservaFinal() {
+async function confirmarReservaFinal() {
     if (mesasSeleccionadas.length === 0) {
         mostrarFeedback("⚠️ Selecciona al menos una mesa en el plano antes de continuar.", true);
         return;
     }
 
-    const totalTexto = document.getElementById('txt-total').innerText;
-    const historial = JSON.parse(localStorage.getItem('historial_reservas')) || [];
-    
-    const registroExistente = historial.find(r => r.fecha === fechaSeleccionada);
-    if (registroExistente) {
-        registroExistente.mesas = [...registroExistente.mesas, ...mesasSeleccionadas];
-    } else {
-        historial.push({
-            fecha: fechaSeleccionada,
-            mesas: mesasSeleccionadas,
-            personas: cantidadPersonas,
-            total: totalTexto
-        });
+    // Verificar si hay usuario logueado
+    const id_usuario = localStorage.getItem('userId');
+    if (!id_usuario) {
+        mostrarModalExito("⚠️ Error", "Debes iniciar sesión para hacer una reserva. Serás redirigido al login.");
+        setTimeout(() => {
+            window.location.href = "/login";
+        }, 2000);
+        return;
     }
-    
-    localStorage.setItem('historial_reservas', JSON.stringify(historial));
 
-    mostrarFeedback("🎉 ¡Reserva procesada con éxito!", false);
-    
-    // 🛠️ CORREGIDO: Redirección limpia al endpoint lógico de Flask para reiniciar la vista
+    // Convertir fecha de DD/MM/YYYY a YYYY-MM-DD HH:MM para el backend
+    const fechaBackend = convertirFechaBackend(fechaSeleccionada);
+
+    // Procesar cada mesa seleccionada individualmente
+    const totalTexto = document.getElementById('txt-total').innerText;
+    let reservasExitosas = 0;
+    let reservasFallidas = 0;
+
+    mostrarFeedback("⏳ Procesando tu reserva...", false);
+
+    for (const mesaId of mesasSeleccionadas) {
+        try {
+            const response = await fetch('/api/reservas', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    id_usuario: id_usuario,
+                    id_mesa: mesaId.toString(),
+                    fecha: fechaBackend,
+                    cantidad_personas: cantidadPersonas
+                })
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                reservasExitosas++;
+                console.log(`✅ Reserva exitosa para mesa ${mesaId}:`, data);
+            } else {
+                reservasFallidas++;
+                console.error(`❌ Error al reservar mesa ${mesaId}:`, data.error);
+            }
+        } catch (error) {
+            reservasFallidas++;
+            console.error(`❌ Error de red al reservar mesa ${mesaId}:`, error);
+        }
+    }
+
+    // Guardar en localStorage como respaldo (solo si falló alguna)
+    if (reservasFallidas > 0) {
+        const historial = JSON.parse(localStorage.getItem('historial_reservas')) || [];
+        const registroExistente = historial.find(r => r.fecha === fechaSeleccionada);
+        if (registroExistente) {
+            registroExistente.mesas = [...registroExistente.mesas, ...mesasSeleccionadas];
+        } else {
+            historial.push({
+                fecha: fechaSeleccionada,
+                mesas: mesasSeleccionadas,
+                personas: cantidadPersonas,
+                total: totalTexto
+            });
+        }
+        localStorage.setItem('historial_reservas', JSON.stringify(historial));
+    }
+
+    // Mostrar resultado
+    if (reservasExitosas === mesasSeleccionadas.length) {
+        mostrarModalExito("🎉 ¡Reserva Exitosa!", `Se reservaron ${reservasExitosas} mesa(s) correctamente. Verifica "Mis Reservas" para más detalles.`);
+    } else if (reservasExitosas > 0) {
+        mostrarModalExito("⚠️ Reserva Parcial", `Se reservaron ${reservasExitosas} de ${mesasSeleccionadas.length} mesas. Algunas mesas no estaban disponibles.`);
+    } else {
+        mostrarModalExito("❌ Error", "No se pudo completar ninguna reserva. Las mesas podrían no estar disponibles. Intenta con otras mesas.");
+    }
+
+    // Redirección limpia
     setTimeout(() => {
-        window.location.href = "/reserva"; 
-    }, 2500);
+        window.location.href = "/reserva";
+    }, 3000);
 }
 
-function renderizarMisReservas() {
+/**
+ * Convertir fecha de DD/MM/YYYY a YYYY-MM-DD HH:MM para el backend
+ */
+function convertirFechaBackend(fechaFrontend) {
+    // fechaFrontend viene en formato DD/MM/YYYY
+    const [dia, mes, anio] = fechaFrontend.split('/');
+    // Agregar hora por defecto (20:00 para la noche)
+    return `${anio}-${mes}-${dia} 20:00`;
+}
+
+async function renderizarMisReservas() {
     const contenedor = document.getElementById('reserva-container');
     if (!contenedor) return;
 
-    contenedor.innerHTML = ""; 
-    const historial = JSON.parse(localStorage.getItem('historial_reservas')) || [];
+    contenedor.innerHTML = "";
 
-    // --- BOTÓN PARA BORRAR TODO ---
+    // Verificar si hay usuario logueado
+    const id_usuario = localStorage.getItem('userId');
+    if (!id_usuario) {
+        contenedor.innerHTML = `<p style="text-align:center; color:#888; padding:20px;">Debes iniciar sesión para ver tus reservas.</p>`;
+        return;
+    }
+
+    // Mostrar mensaje de carga
+    contenedor.innerHTML = `<p style="text-align:center; color:#aaa; padding:20px;">Cargando tus reservas...</p>`;
+
+    try {
+        // Obtener reservas del backend
+        const response = await fetch(`/api/reservas/usuario/${id_usuario}`);
+        const data = await response.json();
+
+        if (response.ok && data.reservas && data.reservas.length > 0) {
+            // Mostrar reservas del backend
+            data.reservas.forEach(res => {
+                const tarjeta = document.createElement('div');
+                tarjeta.className = 'card';
+                tarjeta.innerHTML = `
+                    <p>📅 Fecha: ${res.fecha}</p>
+                    <p>🪑 Mesa: ${res.nombre_mesa} (${res.zona})</p>
+                    <p>👥 Personas: ${res.cantidad_personas}</p>
+                    <p>📋 Estado: ${res.estado}</p>
+                    <p style="font-size:0.8rem; color:#888;">ID: ${res.id_reserva}</p>
+                `;
+                contenedor.appendChild(tarjeta);
+            });
+        } else {
+            // Si no hay reservas en el backend, mostrar las del localStorage como respaldo
+            const historial = JSON.parse(localStorage.getItem('historial_reservas')) || [];
+            if (historial.length > 0) {
+                contenedor.innerHTML = "";
+                historial.forEach(res => {
+                    const tarjeta = document.createElement('div');
+                    tarjeta.className = 'card';
+                    tarjeta.innerHTML = `
+                        <p>📅 Fecha: ${res.fecha}</p>
+                        <p>Mesa(s): ${res.mesas.join(', ')}</p>
+                        <p>Total: ${res.total}</p>
+                        <p style="font-size:0.8rem; color:#888;">⚠️ Reserva local (no sincronizada)</p>
+                    `;
+                    contenedor.appendChild(tarjeta);
+                });
+            } else {
+                contenedor.innerHTML = `<p style="text-align:center; color:#888; padding:20px;">No tienes reservas registradas.</p>`;
+            }
+        }
+    } catch (error) {
+        console.error('Error al obtener reservas:', error);
+        // En caso de error, mostrar las del localStorage como respaldo
+        const historial = JSON.parse(localStorage.getItem('historial_reservas')) || [];
+        if (historial.length > 0) {
+            contenedor.innerHTML = "";
+            historial.forEach(res => {
+                const tarjeta = document.createElement('div');
+                tarjeta.className = 'card';
+                tarjeta.innerHTML = `
+                    <p>📅 Fecha: ${res.fecha}</p>
+                    <p>Mesa(s): ${res.mesas.join(', ')}</p>
+                    <p>Total: ${res.total}</p>
+                    <p style="font-size:0.8rem; color:#888;">⚠️ Reserva local (error de conexión)</p>
+                `;
+                contenedor.appendChild(tarjeta);
+            });
+        } else {
+            contenedor.innerHTML = `<p style="text-align:center; color:#ff6b6b; padding:20px;">Error al cargar reservas. Verifica tu conexión.</p>`;
+        }
+    }
+
+    // --- BOTÓN PARA BORRAR TODO (localStorage) ---
     const btnReset = document.createElement('button');
-    btnReset.innerText = "🗑️ BORRAR TODAS";
+    btnReset.innerText = "🗑️ BORRAR LOCAL";
     btnReset.className = "btn-delete-all";
     btnReset.style.cssText = `
         position: fixed;
@@ -530,48 +675,32 @@ function renderizarMisReservas() {
         box-shadow: 0 4px 15px rgba(255, 60, 60, 0.3);
         letter-spacing: 0.5px;
     `;
-    
+
     btnReset.onmouseover = () => {
         btnReset.style.boxShadow = "0 6px 25px rgba(255, 60, 60, 0.6)";
         btnReset.style.transform = "translateY(-2px)";
     };
-    
+
     btnReset.onmouseout = () => {
         btnReset.style.boxShadow = "0 4px 15px rgba(255, 60, 60, 0.3)";
         btnReset.style.transform = "translateY(0)";
     };
-    
+
     btnReset.onclick = function(e) {
         e.preventDefault();
         mostrarModalConfirmacion(
             "¿Estás 100% seguro?",
-            "Esto eliminará TODAS las reservas y dejará todas las mesas libres.",
+            "Esto eliminará las reservas locales (no las de la base de datos).",
             function() {
                 localStorage.removeItem('historial_reservas');
                 localStorage.setItem('historial_reservas', JSON.stringify([]));
-                mostrarModalExito("✅ Éxito", "Todas las reservas fueron eliminadas correctamente.");
+                mostrarModalExito("✅ Éxito", "Reservas locales eliminadas correctamente.");
                 setTimeout(() => location.reload(), 1500);
             }
         );
     };
     document.body.appendChild(btnReset);
     // ------------------------------------
-
-    if (historial.length === 0) {
-        contenedor.innerHTML = `<p style="text-align:center; color:#888; padding:20px;">No tienes reservas registradas.</p>`;
-        return;
-    }
-
-    historial.forEach(res => {
-        const tarjeta = document.createElement('div');
-        tarjeta.className = 'card';
-        tarjeta.innerHTML = `
-            <p>📅 Fecha: ${res.fecha}</p>
-            <p>Mesa(s): ${res.mesas.join(', ')}</p>
-            <p>Total: ${res.total}</p>
-        `;
-        contenedor.appendChild(tarjeta);
-    });
 }
 
 /**
