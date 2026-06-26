@@ -20,10 +20,10 @@
             </div>
         </button>
         <div id="settings-menu" class="settings-menu">
-            <button onclick="window.location.href='{{ url_for('main.perfil') }}'">👤 Ver mi Perfil</button>
-            <button onclick="window.location.href='{{ url_for('main.catalogo') }}'">📋 Ver Catálogo</button>
-            <button onclick="window.location.href='{{ url_for('main.chat') }}'">💬 Ir al Chat</button>
-            <button onclick="window.location.href='{{ url_for('main.index') }}'" style="color: #ff6b6b;">🚪 Cerrar Sesión</button>
+            <button data-url="{{ url_for('main.perfil') }}" onclick="irA(this)">👤 Ver mi Perfil</button>
+            <button data-url="{{ url_for('main.catalogo') }}" onclick="irA(this)">📋 Ver Catálogo</button>
+            <button data-url="{{ url_for('main.chat') }}" onclick="irA(this)">💬 Ir al Chat</button>
+            <button data-url="{{ url_for('main.index') }}" onclick="irA(this)" style="color: #ff6b6b;">🚪 Cerrar Sesión</button>
         </div>
     </div>
 
@@ -37,7 +37,7 @@
             <div class="menu-list">
                 <button class="menu-btn" onclick="cambiarVista('view-form')"><span>✨ Nueva Reserva</span><span>→</span></button>
                 <button class="menu-btn" onclick="cambiarVista('view-list')"><span>📅 Mis Reservas</span><span>→</span></button>
-                <button class="menu-btn" onclick="window.location.href='{{ url_for('main.inicio') }}'"><span>🏠 Volver al Inicio</span><span>→</span></button>
+                <button class="menu-btn" data-url="{{ url_for('main.inicio') }}" onclick="irA(this)"><span>🏠 Volver al Inicio</span><span>→</span></button>
             </div>
         </div>
 
@@ -58,8 +58,13 @@
 
         <div id="view-map" class="view">
             <button class="btn-back" onclick="cambiarVista('view-form')">← Editar Datos</button>
-            <div style="text-align:center; margin-bottom: 10px;">
+            <div style="text-align:center; margin-bottom: 15px;">
                 <small style="color: #888;">Distribución Real de la Pista (Máx. 4 mesas por reserva)</small>
+                <div style="margin-top: 12px; font-size: 0.8rem; line-height: 1.8;">
+                    <div style="color: #FFD700;">🟡 VIP (M-1, M-2): $35.000 COP</div>
+                    <div style="color: #3d9dff;">🔵 Zona baile (M-3 a M-6): $20.000 COP</div>
+                    <div style="color: #87CEEB;">🔵 Fondo (M-7 a M-10): $15.000 COP</div>
+                </div>
             </div>
             
             <div class="plano-arquitectonico">
@@ -81,8 +86,8 @@
             <div class="card">
                 <h2 style="color:var(--neon-purple);text-align:center; margin-bottom: 15px;">Finalizar Compra</h2>
                 <p style="margin-bottom: 10px;">Método de pago:</p>
-                <div class="metodo-pago active" onclick="selectPay(this, 'tarjeta')"><input type="radio" name="pay" checked> 💳 Tarjeta / Débito</div>
-                <div class="metodo-pago" onclick="selectPay(this, 'virtual')"><input type="radio" name="pay"> 📱 Nequi / Daviplata</div>
+                <div class="metodo-pago active" onclick="selectPay(this, 'tarjeta')" style="text-align:center;">💳 Tarjeta / Débito</div>
+                <div class="metodo-pago" onclick="selectPay(this, 'virtual')" style="text-align:center;">📱 Nequi / Daviplata</div>
                 <button class="btn-action" style="background:var(--neon-cyan);color:black;margin-top:20px;" onclick="confirmarReservaFinal()">CONFIRMAR Y PAGAR</button>
             </div>
         </div>
@@ -94,5 +99,10 @@
     </div>
 
     <script src="{{ url_for('static', filename='js/reserva.js') }}"></script>
+    <script>
+        function irA(element) {
+            window.location.href = element.getAttribute('data-url');
+        }
+    </script>
 </body>
 </html>

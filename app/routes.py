@@ -5,7 +5,7 @@ from datetime import datetime
 # 🛠️ CORREGIDO: Cambiamos 'bp' por 'main' para que coincida con tus url_for del HTML
 main = Blueprint('main', __name__)
 
-# 1. RUTA RAÍZ
+# RUTA RAÍZ
 @main.route('/')
 def index():
     return render_template('html/index.html')
@@ -36,42 +36,9 @@ def reserva():
     return render_template('html/reserva.html')
 
 
-# 3. RUTA DE PRUEBA: Crear rol primero
-@main.route('/crear-rol-prueba', methods=['GET'])
-def crear_rol():
-    try:
-        nuevo_rol = Rol(
-            id_rol="ROL001",
-            nombre="Cliente"
-        )
-        db.session.add(nuevo_rol)
-        db.session.commit()
-        return jsonify({"mensaje": "¡Rol creado con éxito en SQLite!"}), 201
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
 
-# 4. RUTA DE PRUEBA: Mantenemos intacta tu ruta para meter el usuario a la DB
-@main.route('/crear-usuario-prueba', methods=['GET'])
-def crear_usuario():
-    try:
-        nuevo_usuario = Usuario(
-            id_usuario="101010",
-            nombre="Juan",
-            apellido="Perez",
-            correo="juan@planclub.com",
-            celular="1234567890",
-            fecha_nacimiento="1990-01-01",
-            contrasena="clave123",
-            estado="Activa",
-            id_rol="ROL001"
-        )
-        db.session.add(nuevo_usuario)
-        db.session.commit()
-        return jsonify({"mensaje": "¡Primer usuario guardado con éxito en SQLite!"}), 201
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
 
-# 5. RUTA DE REGISTRO REAL - Guarda en base de datos SQLite
+# RUTA DE REGISTRO REAL - Guarda en base de datos SQLite
 @main.route('/api/registro', methods=['POST'])
 def registro():
     try:
@@ -115,7 +82,7 @@ def registro():
         db.session.rollback()
         return jsonify({"error": str(e)}), 500
 
-# 6. RUTA DE LOGIN REAL - Verifica contra base de datos
+# RUTA DE LOGIN REAL - Verifica contra base de datos
 @main.route('/api/login', methods=['POST'])
 def login_api():
     try:
@@ -127,7 +94,9 @@ def login_api():
             return jsonify({
                 "mensaje": "Login exitoso",
                 "usuario": usuario.nombre,
-                "id_usuario": usuario.id_usuario
+                "id_usuario": usuario.id_usuario,
+                "celular": usuario.celular,
+                "apellido": usuario.apellido
             }), 200
         else:
             return jsonify({"error": "Credenciales incorrectas"}), 401

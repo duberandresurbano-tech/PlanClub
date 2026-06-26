@@ -113,6 +113,8 @@ function guardarRegistro() {
             // Guardar sesión en localStorage para las otras funciones
             localStorage.setItem('userName', nombre);
             localStorage.setItem('pc_correo', correo);
+            localStorage.setItem('pc_telefono', telefono);
+            localStorage.setItem('pc_apellido', apellido);
             
             setTimeout(hidePanels, 1500);
         } else {
@@ -164,6 +166,8 @@ function validarLogin() {
             localStorage.setItem('userName', data.usuario);
             localStorage.setItem('pc_correo', userIn);
             localStorage.setItem('userId', data.id_usuario);
+            localStorage.setItem('pc_telefono', data.celular || '');
+            localStorage.setItem('pc_apellido', data.apellido || '');
             
             // Redirigir al inicio
             setTimeout(() => { window.location.href = "/inicio"; }, 1500);

@@ -161,3 +161,63 @@ function renderizarListaPedido() {
     });
     txtTotal.innerText = totalAcumulado.toLocaleString('es-CO');
 }
+
+function eliminarProducto(index) {
+    carrito.splice(index, 1);
+    actualizarContadores();
+    renderizarListaPedido();
+}
+
+function vaciarCarrito(event) {
+    event.preventDefault();
+    carrito = [];
+    actualizarContadores();
+    renderizarListaPedido();
+    lanzarToast('Carrito vaciado 🗑️');
+}
+
+function abrirConfirmacion() {
+    if (carrito.length === 0) {
+        lanzarToast('⚠️ El carrito está vacío');
+        return;
+    }
+    document.getElementById('overlay').style.display = 'flex';
+}
+
+function procesarPedido() {
+    console.log('Pedido procesado:', carrito);
+    document.getElementById('modal-confirmacion').style.display = 'none';
+    document.getElementById('modal-gracias').style.display = 'block';
+}
+
+function regresar() {
+    pantallaActual = 'catalogo';
+    const scrCatalogo = document.getElementById('catalogo-screen');
+    const scrPedido = document.getElementById('pedido');
+    const modal = document.getElementById('modal-confirmacion');
+    
+    
+    scrPedido.style.opacity = '0';
+    scrPedido.style.transform = 'scale(0.95)';
+    scrCatalogo.style.display = 'block';
+    document.getElementById('main-nav').style.display = 'block';
+    
+    document.getElementById('header-title').innerText = "Catálogo";
+    document.getElementById('logoSuperior').style.display = 'block';
+    document.getElementById('casaSuperior').style.display = 'block'; 
+    document.getElementById('flechaSuperior').style.display = 'none';
+    
+    setTimeout(() => {
+        scrPedido.style.display = 'none';
+        scrCatalogo.style.opacity = '1';
+    }, 300);
+}
+
+function reiniciarApp() {
+    carrito = [];
+    actualizarContadores();
+    document.getElementById('overlay').style.display = 'none';
+    document.getElementById('modal-confirmacion').style.display = 'block';
+    document.getElementById('modal-gracias').style.display = 'none';
+    regresar();
+}

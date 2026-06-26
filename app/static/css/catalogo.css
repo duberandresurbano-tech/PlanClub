@@ -1,7 +1,7 @@
 /* --- ESTILOS GENERALES Y ANIMACIONES --- */
 * {
     box-sizing: border-box;
-    margin: 0;
+    margin: 2;
     padding: 0;
     font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
     -webkit-tap-highlight-color: transparent;
@@ -143,22 +143,26 @@ header {
     left: 20px;
     top: 50%;
     transform: translateY(-50%);
-    width: 45px;
-    height: 45px;
-    background: rgba(35, 30, 55, 0.8);
-    border: 1px solid rgba(255, 215, 0, 0.35);
-    border-radius: 14px;
+    width: 38px;
+    height: 38px;
+    background: rgba(255, 255, 255, 0.04);
+    border: none;
+    border-radius: 50%;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.3s ease;
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 18px;
+}
     z-index: 12;
     box-shadow: 0 0 10px rgba(255, 215, 0, 0.1);
 }
 .top-left-btn:hover {
-    box-shadow: 0 0 15px rgba(255, 215, 0, 0.4);
-    transform: translateY(-50%) scale(1.08);
+    color: #ffd700;
+    transform: translateY(-50%) scale(1.1);
+    background: rgba(255, 215, 0, 0.12);
 }
 .top-left-btn img { width: 85%; height: 85%; object-fit: contain; }
 .top-left-btn .home-icon {
@@ -210,7 +214,7 @@ header {
     flex: 1;
     overflow-y: auto;
     padding: 20px;
-    padding-bottom: 120px;
+    padding-bottom: 180px;
     opacity: 1;
     transform: scale(1);
     transition: opacity 0.3s ease, transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.1);
@@ -538,7 +542,7 @@ header {
     .card .title { font-size: 11px; height: 30px; }
     .card .price { font-size: 13px; margin-bottom: 6px; }
     .nav-bottom { padding: 12px 15px 22px 15px; }
-    .content-scroll { padding: 15px; padding-bottom: 110px; }
+    .content-scroll { padding: 15px; padding-bottom: 180px; }
     .category-btn { font-size: 10px; padding: 10px 4px; }
 }
 @media (max-width: 350px) {
@@ -551,7 +555,7 @@ header {
 @media (min-width: 600px) {
     .products-grid { grid-template-columns: repeat(3, 1fr); gap: 18px; }
     header { height: 80px; }
-    .content-scroll { padding: 28px; padding-bottom: 130px; }
+    .content-scroll { padding: 28px; padding-bottom: 190px; }
 }
 
 /* --- ESCRITORIO PEQUEÑO / TABLET HORIZONTAL --- */
@@ -567,7 +571,7 @@ header {
 /* --- ESCRITORIO GRANDE --- */
 @media (min-width: 1300px) {
     .products-grid { grid-template-columns: repeat(5, 1fr); gap: 22px; }
-    .content-scroll { padding: 36px; padding-bottom: 140px; }
+    .content-scroll { padding: 36px; padding-bottom: 200px; }
     .card .title { font-size: 13px; }
     .card .price { font-size: 15px; }
 }

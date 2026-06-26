@@ -5,6 +5,193 @@ let mesasSeleccionadas = [];
 let metodoPagoSeleccionado = "tarjeta"; // Por defecto
 
 /**
+ * FUNCIONES PARA MODALES DE CONFIRMACIÓN CON GLASSMORPHISM Y AMARILLO
+ */
+function mostrarModalConfirmacion(titulo, mensaje, onConfirm) {
+    const overlay = document.createElement('div');
+    overlay.style.cssText = `
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.5);
+        backdrop-filter: blur(5px);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 99999;
+    `;
+    
+    const modal = document.createElement('div');
+    modal.style.cssText = `
+        background: rgba(255, 215, 0, 0.15);
+        border: 2px solid rgba(255, 215, 0, 0.4);
+        backdrop-filter: blur(10px);
+        border-radius: 16px;
+        padding: 30px;
+        max-width: 400px;
+        text-align: center;
+        box-shadow: 0 8px 32px rgba(255, 215, 0, 0.2);
+        animation: slideIn 0.3s ease;
+        color: #fff;
+        font-family: 'Lexend', sans-serif;
+    `;
+    
+    modal.innerHTML = `
+        <h2 style="margin-bottom: 15px; color: #FFD700; font-size: 1.5rem; letter-spacing: 2px;">${titulo}</h2>
+        <p style="margin-bottom: 25px; color: #fff; font-size: 0.95rem; line-height: 1.6;">${mensaje}</p>
+        <div style="display: flex; gap: 10px; justify-content: center;">
+            <button class="btn-modal-cancel" style="
+                flex: 1;
+                padding: 12px 20px;
+                background: rgba(100, 100, 100, 0.3);
+                border: 1px solid rgba(255, 255, 255, 0.3);
+                color: #fff;
+                border-radius: 8px;
+                cursor: pointer;
+                font-weight: bold;
+                transition: all 0.3s ease;
+            ">CANCELAR</button>
+            <button class="btn-modal-confirm" style="
+                flex: 1;
+                padding: 12px 20px;
+                background: linear-gradient(135deg, #FFD700 0%, #FFC700 100%);
+                border: none;
+                color: #000;
+                border-radius: 8px;
+                cursor: pointer;
+                font-weight: bold;
+                transition: all 0.3s ease;
+            ">CONFIRMAR</button>
+        </div>
+    `;
+    
+    const btnCancel = modal.querySelector('.btn-modal-cancel');
+    const btnConfirm = modal.querySelector('.btn-modal-confirm');
+    
+    btnCancel.onmouseover = () => {
+        btnCancel.style.background = "rgba(100, 100, 100, 0.5)";
+    };
+    btnCancel.onmouseout = () => {
+        btnCancel.style.background = "rgba(100, 100, 100, 0.3)";
+    };
+    
+    btnConfirm.onmouseover = () => {
+        btnConfirm.style.transform = "scale(1.05)";
+        btnConfirm.style.boxShadow = "0 4px 15px rgba(255, 215, 0, 0.4)";
+    };
+    btnConfirm.onmouseout = () => {
+        btnConfirm.style.transform = "scale(1)";
+        btnConfirm.style.boxShadow = "none";
+    };
+    
+    btnCancel.onclick = () => {
+        overlay.style.animation = "fadeOut 0.3s ease";
+        setTimeout(() => overlay.remove(), 300);
+    };
+    
+    btnConfirm.onclick = () => {
+        overlay.style.animation = "fadeOut 0.3s ease";
+        setTimeout(() => {
+            overlay.remove();
+            onConfirm();
+        }, 300);
+    };
+    
+    overlay.appendChild(modal);
+    document.body.appendChild(overlay);
+    
+    // Agregar estilos de animación si no existen
+    if (!document.querySelector('style[data-modal-animations]')) {
+        const style = document.createElement('style');
+        style.setAttribute('data-modal-animations', 'true');
+        style.textContent = `
+            @keyframes slideIn {
+                from {
+                    opacity: 0;
+                    transform: translateY(-20px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+            @keyframes fadeOut {
+                from {
+                    opacity: 1;
+                }
+                to {
+                    opacity: 0;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+    }
+}
+
+function mostrarModalExito(titulo, mensaje) {
+    const overlay = document.createElement('div');
+    overlay.style.cssText = `
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.5);
+        backdrop-filter: blur(5px);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 99999;
+    `;
+    
+    const modal = document.createElement('div');
+    modal.style.cssText = `
+        background: rgba(255, 215, 0, 0.15);
+        border: 2px solid rgba(255, 215, 0, 0.4);
+        backdrop-filter: blur(10px);
+        border-radius: 16px;
+        padding: 30px;
+        max-width: 400px;
+        text-align: center;
+        box-shadow: 0 8px 32px rgba(255, 215, 0, 0.2);
+        animation: slideIn 0.3s ease;
+        color: #fff;
+        font-family: 'Lexend', sans-serif;
+    `;
+    
+    modal.innerHTML = `
+        <h2 style="margin-bottom: 15px; color: #FFD700; font-size: 1.5rem; letter-spacing: 2px;">${titulo}</h2>
+        <p style="margin-bottom: 25px; color: #fff; font-size: 0.95rem; line-height: 1.6;">${mensaje}</p>
+        <button class="btn-modal-ok" style="
+            width: 100%;
+            padding: 12px 20px;
+            background: linear-gradient(135deg, #FFD700 0%, #FFC700 100%);
+            border: none;
+            color: #000;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        ">ACEPTAR</button>
+    `;
+    
+    const btnOk = modal.querySelector('.btn-modal-ok');
+    
+    btnOk.onmouseover = () => {
+        btnOk.style.transform = "scale(1.05)";
+        btnOk.style.boxShadow = "0 4px 15px rgba(255, 215, 0, 0.4)";
+    };
+    btnOk.onmouseout = () => {
+        btnOk.style.transform = "scale(1)";
+        btnOk.style.boxShadow = "none";
+    };
+    
+    btnOk.onclick = () => {
+        overlay.style.animation = "fadeOut 0.3s ease";
+        setTimeout(() => overlay.remove(), 300);
+    };
+    
+    overlay.appendChild(modal);
+    document.body.appendChild(overlay);
+}
+
+/**
  * 1. INICIALIZACIÓN DE BASE DE DATOS SIMULADA (HISTORIAL DE OCUPACIÓN)
  * Si no existe un historial en el navegador, creamos uno con datos de prueba.
  */
@@ -72,8 +259,29 @@ function generarMapaMesas() {
     
     mesasSeleccionadas = []; // Reiniciar carrito de selección
 
-    const clasesMesas = ['m-r', 'm-y', 'm-o', 'm-b', 'm-t'];
-    const precioPorMesa = 20000;
+    // Función para obtener el precio según el ID de la mesa
+    function getPrecioMesa(mesaId) {
+        if (mesaId === 1 || mesaId === 2) {
+            return 35000; // VIP amarillas
+        } else if (mesaId >= 3 && mesaId <= 6) {
+            return 20000; // Zona Baile
+        } else if (mesaId >= 7 && mesaId <= 10) {
+            return 15000; // Fondo
+        }
+        return 20000; // Por defecto
+    }
+
+    // Función para obtener la capacidad según el ID de la mesa
+    function getCapacidadMesa(mesaId) {
+        if (mesaId === 1 || mesaId === 2) {
+            return { tipo: 'VIP', capacidad: 8 };
+        } else if (mesaId >= 3 && mesaId <= 6) {
+            return { tipo: 'Zona Baile', capacidad: 6 };
+        } else if (mesaId >= 7 && mesaId <= 10) {
+            return { tipo: 'Fondo', capacidad: 4 };
+        }
+        return { tipo: 'Estándar', capacidad: 4 };
+    }
 
     // Obtener las reservas existentes desde el LocalStorage para saber cuáles bloquear hoy
     const historial = JSON.parse(localStorage.getItem('historial_reservas')) || [];
@@ -88,20 +296,29 @@ function generarMapaMesas() {
         { id: 1, x: 8, y: 28 },    // Lateral Izquierdo Alto
         { id: 2, x: 84, y: 28 },   // Lateral Derecho Alto
         { id: 3, x: 10, y: 54 },   // Lateral Izquierdo Medio
-        { id: 4, x: 82, y: 54 },   // Lateral Derecho Medio
-        { id: 5, x: 16, y: 78 },   // Lateral Izquierdo Bajo
-        { id: 6, x: 76, y: 78 },   // Lateral Derecho Bajo
-        { id: 7, x: 34, y: 88 },   // Curva Inferior Izquierda
-        { id: 8, x: 58, y: 88 },   // Curva Inferior Derecha
-        { id: 9, x: 36, y: 54 },   // Frente de pista VIP Izquierda
-        { id: 10, x: 56, y: 54 }   // Frente de pista VIP Derecha
+        { id: 6, x: 82, y: 54 },   // Lateral Derecho Medio
+        { id: 7, x: 16, y: 78 },   // Lateral Izquierdo Bajo
+        { id: 10, x: 76, y: 78 },  // Lateral Derecho Bajo
+        { id: 8, x: 34, y: 88 },   // Curva Inferior Izquierda
+        { id: 9, x: 58, y: 88 },   // Curva Inferior Derecha
+        { id: 4, x: 36, y: 54 },   // Frente de pista VIP Izquierda
+        { id: 5, x: 56, y: 54 }    // Frente de pista VIP Derecha
     ];
 
     positions = posiciones.forEach((pos, index) => {
         const mesa = document.createElement('div');
-        const claseAleatoria = clasesMesas[index % clasesMesas.length];
         
-        mesa.className = `mesa ${claseAleatoria}`;
+        // Asignar clases por rango de ID
+        let claseColor;
+        if (pos.id === 1 || pos.id === 2) {
+            claseColor = 'm-y'; 
+        } else if (pos.id >= 3 && pos.id <= 6) {
+            claseColor = 'm-b'; 
+        } else if (pos.id >= 7 && pos.id <= 10) {
+            claseColor = 'm-t'; 
+        }
+        
+        mesa.className = `mesa ${claseColor}`;
         mesa.innerText = `M-${pos.id}`;
         
         mesa.style.left = `${pos.x}%`;
@@ -144,8 +361,12 @@ function generarMapaMesas() {
                 
                 if (info && txtMesa && txtTotal) {
                     if (mesasSeleccionadas.length > 0) {
-                        txtMesa.innerText = `Mesas reservadas: ${mesasSeleccionadas.map(id => `M-${id}`).join(', ')}`;
-                        let totalCalculado = mesasSeleccionadas.length * precioPorMesa;
+                        const mesasInfo = mesasSeleccionadas.map(id => {
+                            const cap = getCapacidadMesa(id);
+                            return `M-${id} (${cap.tipo}: ${cap.capacidad} personas)`;
+                        }).join(', ');
+                        txtMesa.innerText = `Mesas reservadas: ${mesasInfo}`;
+                        let totalCalculado = mesasSeleccionadas.reduce((sum, mesaId) => sum + getPrecioMesa(mesaId), 0);
                         txtTotal.innerText = `$${totalCalculado.toLocaleString('es-CO')} COP`;
                         info.style.display = 'block';
                     } else {
@@ -322,14 +543,16 @@ function renderizarMisReservas() {
     
     btnReset.onclick = function(e) {
         e.preventDefault();
-        if (confirm("¿Estás 100% seguro de borrar TODAS las reservas?")) {
-            if (confirm("Esta acción dejará todas las mesas libres. ¿Deseas continuar?")) {
+        mostrarModalConfirmacion(
+            "¿Estás 100% seguro?",
+            "Esto eliminará TODAS las reservas y dejará todas las mesas libres.",
+            function() {
                 localStorage.removeItem('historial_reservas');
                 localStorage.setItem('historial_reservas', JSON.stringify([]));
-                alert("Todas las reservas fueron eliminadas correctamente.");
-                location.reload();
+                mostrarModalExito("✅ Éxito", "Todas las reservas fueron eliminadas correctamente.");
+                setTimeout(() => location.reload(), 1500);
             }
-        }
+        );
     };
     document.body.appendChild(btnReset);
     // ------------------------------------

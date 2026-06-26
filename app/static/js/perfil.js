@@ -20,7 +20,7 @@ document.addEventListener('DOMContentLoaded', () => {
 // ── CARGAR DATOS EN LOS INPUTS Y AVATAR ─────────────────────
 function cargarDatosPerfil() {
     // Recuperamos los datos del inicio de sesión o registros previos
-    const nombre = localStorage.getItem('pc_user'); 
+    const nombre = localStorage.getItem('userName'); 
     const correo = localStorage.getItem('pc_correo');
     const telefono = localStorage.getItem('pc_telefono');
     const apellidoGuardado = localStorage.getItem('pc_apellido');
