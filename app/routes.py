@@ -540,3 +540,39 @@ def cancelar_reserva(id_reserva):
     except Exception as e:
         db.session.rollback()
         return jsonify({"error": str(e)}), 500
+
+
+# Ruta para borrar todas las reservas de un usuario
+@main.route('/api/reservas/usuario/<id_usuario>/borrar-todas', methods=['DELETE'])
+def borrar_todas_reservas_usuario(id_usuario):
+    try:
+        # Verificar que el usuario existe
+        usuario = Usuario.query.filter_by(id_usuario=id_usuario).first()
+        if not usuario:
+            return jsonify({"error": "Usuario no encontrado"}), 404
+        
+        # Obtener todas las reservas del usuario
+        reservas = Reserva.query.filter_by(id_usuario=id_usuario).all()
+        
+        if not reservas:
+            return jsonify({"mensaje": "El usuario no tiene reservas para borrar"}), 200
+        
+        # Liberar las mesas de todas las reservas
+        for reserva in reservas:
+            mesa = Mesa.query.get(reserva.id_mesa)
+            if mesa:
+                mesa.estado = 'Disponible'
+        
+        # Borrar todas las reservas del usuario
+        Reserva.query.filter_by(id_usuario=id_usuario).delete()
+        
+        db.session.commit()
+        
+        return jsonify({
+            "mensaje": f"Se han borrado {len(reservas)} reserva(s) del usuario exitosamente",
+            "cantidad_reservas_borradas": len(reservas)
+        }), 200
+        
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"error": str(e)}), 500

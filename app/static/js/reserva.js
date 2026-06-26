@@ -609,8 +609,28 @@ async function renderizarMisReservas() {
                     <p>👥 Personas: ${res.cantidad_personas}</p>
                     <p>📋 Estado: ${res.estado}</p>
                     <p style="font-size:0.8rem; color:#888;">ID: ${res.id_reserva}</p>
+                    <button class="btn-cancelar-reserva" data-id-reserva="${res.id_reserva}" style="
+                        margin-top: 10px;
+                        padding: 8px 12px;
+                        background: linear-gradient(135deg, #ff3c3c 0%, #ff6b5b 100%);
+                        color: white;
+                        border: none;
+                        border-radius: 6px;
+                        cursor: pointer;
+                        font-weight: bold;
+                        font-size: 12px;
+                        transition: all 0.3s ease;
+                    ">Cancelar Reserva</button>
                 `;
                 contenedor.appendChild(tarjeta);
+            });
+
+            // Agregar eventos a los botones de cancelar reserva individual
+            document.querySelectorAll('.btn-cancelar-reserva').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const idReserva = this.getAttribute('data-id-reserva');
+                    cancelarReservaIndividual(idReserva);
+                });
             });
         } else {
             // Si no hay reservas en el backend, mostrar las del localStorage como respaldo
@@ -654,9 +674,9 @@ async function renderizarMisReservas() {
         }
     }
 
-    // --- BOTÓN PARA BORRAR TODO (localStorage) ---
+    // --- BOTÓN PARA BORRAR TODO (localStorage + base de datos) ---
     const btnReset = document.createElement('button');
-    btnReset.innerText = "🗑️ BORRAR LOCAL";
+    btnReset.innerText = "🗑️ BORRAR TODAS";
     btnReset.className = "btn-delete-all";
     btnReset.style.cssText = `
         position: fixed;
@@ -690,12 +710,31 @@ async function renderizarMisReservas() {
         e.preventDefault();
         mostrarModalConfirmacion(
             "¿Estás 100% seguro?",
-            "Esto eliminará las reservas locales (no las de la base de datos).",
-            function() {
+            "Esto eliminará TODAS tus reservas (tanto locales como de la base de datos).",
+            async function() {
+                // Borrar reservas locales
                 localStorage.removeItem('historial_reservas');
                 localStorage.setItem('historial_reservas', JSON.stringify([]));
-                mostrarModalExito("✅ Éxito", "Reservas locales eliminadas correctamente.");
-                setTimeout(() => location.reload(), 1500);
+
+                // Borrar reservas de la base de datos
+                try {
+                    const response = await fetch(`/api/reservas/usuario/${id_usuario}/borrar-todas`, {
+                        method: 'DELETE'
+                    });
+                    const data = await response.json();
+
+                    if (response.ok) {
+                        mostrarModalExito("✅ Éxito", data.mensaje || "Todas tus reservas han sido eliminadas.");
+                        setTimeout(() => location.reload(), 1500);
+                    } else {
+                        mostrarModalExito("⚠️ Parcial", "Reservas locales eliminadas, pero hubo un error con las de la base de datos.");
+                        setTimeout(() => location.reload(), 1500);
+                    }
+                } catch (error) {
+                    console.error('Error al borrar reservas de la base de datos:', error);
+                    mostrarModalExito("⚠️ Parcial", "Reservas locales eliminadas, pero hubo un error de conexión con la base de datos.");
+                    setTimeout(() => location.reload(), 1500);
+                }
             }
         );
     };
@@ -747,6 +786,34 @@ function toggleSettings() {
     if (menu) {
         menu.style.display = (menu.style.display === 'flex') ? 'none' : 'flex';
     }
+}
+
+/**
+ * Función para cancelar una reserva individual
+ */
+async function cancelarReservaIndividual(idReserva) {
+    mostrarModalConfirmacion(
+        "¿Cancelar esta reserva?",
+        "Esta acción liberará la mesa y cancelará tu reserva. ¿Estás seguro?",
+        async function() {
+            try {
+                const response = await fetch(`/api/reservas/cancelar/${idReserva}`, {
+                    method: 'PUT'
+                });
+                const data = await response.json();
+
+                if (response.ok) {
+                    mostrarModalExito("✅ Éxito", "Reserva cancelada correctamente. La mesa ha sido liberada.");
+                    setTimeout(() => renderizarMisReservas(), 1500);
+                } else {
+                    mostrarModalExito("❌ Error", data.error || "No se pudo cancelar la reserva. Intenta nuevamente.");
+                }
+            } catch (error) {
+                console.error('Error al cancelar reserva:', error);
+                mostrarModalExito("❌ Error", "Hubo un error de conexión. Intenta nuevamente.");
+            }
+        }
+    );
 }
 
 // Iniciar aplicación en la visual Home
