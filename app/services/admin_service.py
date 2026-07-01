@@ -1,4 +1,5 @@
 from app.models import db, Usuario, Rol
+from flask_login import current_user
 import random
 
 SUPERADMIN_EMAIL = 'admin@planclub.com'
@@ -33,7 +34,11 @@ def puede_editar_usuario(model, usuario_actual) -> bool:
 
 def puede_eliminar_usuario(model) -> bool:
     """Nadie puede eliminar al superadmin."""
-    return model.correo != SUPERADMIN_EMAIL
+    if model.correo == SUPERADMIN_EMAIL:
+        return False
+    if current_user.is_authenticated and model.id_usuario == current_user.id_usuario:
+        return False
+    return True
 
 
 def asignar_rol(model, form, is_created: bool):
@@ -50,3 +55,12 @@ def asignar_rol(model, form, is_created: bool):
         model.id_rol = form.rol.data.id_rol
     elif is_created:
         model.id_rol = 'R1'
+
+from app.models import Usuario
+
+def is_user_active(user):
+    usuario = Usuario.query.filter_by(
+        id_usuario=user.get_id()
+    ).first()
+
+    return usuario is not None and usuario.estado == "Activa"

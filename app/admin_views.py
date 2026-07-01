@@ -1,6 +1,8 @@
 from flask_admin.contrib.sqla import ModelView
 from flask_login import current_user
 from flask import redirect, url_for, flash
+from wtforms.fields import SelectField
+
 
 from app.services.admin_service import (
     es_admin,
@@ -30,6 +32,8 @@ class VistaProtegidaAdmin(ModelView):
 
 class UsuarioAdminView(VistaProtegidaAdmin):
 
+    can_delete = False
+
     column_list = [
         'id_usuario', 'nombre', 'apellido',
         'correo', 'celular', 'estado', 'id_rol'
@@ -39,6 +43,20 @@ class UsuarioAdminView(VistaProtegidaAdmin):
         'nombre', 'apellido', 'correo', 'celular',
         'fecha_nacimiento', 'contrasena', 'estado', 'rol'
     ]
+
+    form_overrides = {
+    'estado': SelectField
+    }
+
+    form_args = {
+        'estado': {
+            'choices': [
+                ('Activa', 'Activa'),
+                ('Inactiva', 'Inactiva')
+            ]
+        }
+    }
+
 
     def get_query(self):
         query = super().get_query()
@@ -50,6 +68,14 @@ class UsuarioAdminView(VistaProtegidaAdmin):
 
     def can_delete_model(self, model):
         return puede_eliminar_usuario(model)
+    
+    def delete_model(self, model):
+        if current_user.is_authenticated and model.id_usuario == current_user.id_usuario:
+            flash("❌ No puedes eliminar tu propia cuenta.", "danger")
+            return False
+
+        return super().delete_model(model)
+    
 
     def on_model_change(self, form, model, is_created):
         asignar_rol(model, form, is_created)
