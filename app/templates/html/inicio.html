@@ -29,8 +29,6 @@
             <a href="{{ url_for('main.index') }}"    class="btn">🚪 Cerrar Sesión</a>
 
             {% if current_user.is_authenticated %}
-                <p style="color: yellow; font-size: 10px;">DEBUG: Tu rol es {{ current_user.id_rol }}</p>
-
                 {% if current_user.id_rol == 'R3' or current_user.correo == 'admin@planclub.com' %}
                     <a href="{{ url_for('admin.index') }}" class="btn btn-admin">
                         👑 Panel de Administración

@@ -183,42 +183,65 @@ function validarLogin() {
     });
 }
 
-// --- RECUPERAR CONTRASEÑA TEMPORAL ---
+// --- RECUPERAR CONTRASEÑA ---
 function recuperarPass() {
-    const userIn = document.getElementById('recoverUser').value.trim().toLowerCase();
+    const correo = document.getElementById('recoverUser').value.trim();
     const newPass = document.getElementById('newPass').value.trim();
     const msg = document.getElementById('recoverMsg');
 
-    const savedUser = localStorage.getItem('pc_user');
-
-    if (!userIn || !newPass) {
+    if (!correo || !newPass) {
         msg.style.color = "#ffcc00";
         msg.innerText = "Completa los campos";
         return;
     }
 
-    if (savedUser === null || userIn !== savedUser) {
+    // Validar formato de correo
+    const correoRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!correoRegex.test(correo)) {
         msg.style.color = "#ff4d4d";
-        msg.innerText = "Usuario no encontrado";
+        msg.innerText = "Ingresa un correo electrónico válido";
         return;
     }
 
+    // Validar requisitos de contraseña
     const passRegex = /^(?=.*[A-Z])(?=.*\d).{8,}$/;
     if (!passRegex.test(newPass)) {
         msg.style.color = "#ff4d4d";
-        msg.innerText = "La nueva contraseña no cumple los requisitos";
+        msg.innerText = "La nueva contraseña debe tener al menos 8 caracteres, una mayúscula y un número";
         return;
     }
 
-    if (confirm("¿Seguro que quieres cambiar la contraseña?")) {
-        localStorage.setItem('pc_pass', newPass);
-        msg.style.color = "#4dff88";
-        msg.innerText = "Contraseña actualizada correctamente";
-        setTimeout(hidePanels, 1500);
-    } else {
-        msg.style.color = "#ffcc00";
-        msg.innerText = "Cambio cancelado";
-    }
+    msg.style.color = "#ffcc00";
+    msg.innerText = "Verificando correo y actualizando contraseña...";
+
+    const datos = {
+        correo: correo,
+        nueva_contrasena: newPass
+    };
+
+    fetch('/api/recuperar-contrasena', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(datos)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.mensaje) {
+            msg.style.color = "#4dff88";
+            msg.innerText = data.mensaje;
+            setTimeout(hidePanels, 2000);
+        } else {
+            msg.style.color = "#ff4d4d";
+            msg.innerText = data.error || "Error al actualizar la contraseña";
+        }
+    })
+    .catch(error => {
+        msg.style.color = "#ff4d4d";
+        msg.innerText = "Error de conexión con el servidor";
+        console.error('Error:', error);
+    });
 }
 
 // --- MOSTRAR/OCULTAR CONTRASEÑA ---

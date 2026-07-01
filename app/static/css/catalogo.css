@@ -93,6 +93,8 @@ body {
     -webkit-backdrop-filter: blur(40px);
     z-index: 2;
     border: none;
+    /* Asegurar que el contenido no tape el botón */
+    padding-bottom: 100px;
 }
 
 @keyframes rotarLuz {
@@ -213,13 +215,15 @@ header {
     flex: 1;
     overflow-y: auto;
     padding: 20px;
-    padding-bottom: 180px;
+    padding-bottom: 120px;
     opacity: 1;
     transform: scale(1);
     transition: opacity 0.3s ease, transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.1);
     width: 100%;
     max-width: 1400px;
     margin: 0 auto;
+    /* Safe area para móviles modernos */
+    padding-bottom: max(120px, calc(120px + env(safe-area-inset-bottom)));
 }
 .content-scroll::-webkit-scrollbar { width: 5px; }
 .content-scroll::-webkit-scrollbar-thumb { background: linear-gradient(#ffd700, #ffd700); border-radius: 10px; }
@@ -427,20 +431,27 @@ header {
 
 /* --- BARRA DE NAVEGACIÓN INFERIOR PULSANTE --- */
 .nav-bottom {
-    position: absolute;
+    position: fixed;
     bottom: 0;
     left: 0;
     width: 100%;
     background: linear-gradient(360deg, rgba(8, 6, 12, 1) 0%, rgba(18, 14, 28, 0.92) 100%);
-    padding: 15px 22px 28px 22px;
+    padding: 15px 20px 25px 20px;
     border-top: 1px solid rgba(255,255,255,0.1);
-    z-index: 10;
+    z-index: 9999;
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.5);
+    /* Safe area para iPhones con notch */
+    padding-bottom: max(25px, env(safe-area-inset-bottom));
+    /* Asegurar que siempre sea visible */
+    min-height: 80px;
+    /* Evitar que se oculte detrás de otros elementos */
+    pointer-events: auto;
 }
 
 /* PULSO DE NEÓN INTENSO */
 .nav-btn {
     width: 100%;
-    padding: 16px;
+    padding: 18px 20px;
     background: linear-gradient(135deg, #ffd700 0%, #ffaa00 50%, #ff7700 100%);
     background-size: 200% auto;
     color: #030305;
@@ -454,6 +465,14 @@ header {
     align-items: center;
     gap: 10px;
     animation: superPulsoNeon 1.8s infinite ease-in-out, gradienteMovimiento 4s ease infinite;
+    /* Mejorar área de toque en móviles */
+    min-height: 55px;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    /* Asegurar visibilidad */
+    line-height: 1.2;
+    text-align: center;
 }
 
 @keyframes gradienteMovimiento {
@@ -533,22 +552,28 @@ header {
 
 /* --- MEDIA QUERIES RESPONSIVAS --- */
 @media (max-width: 480px) {
-    body { padding: 8px; }
-    .phone-glow-wrapper { width: 100%; height: calc(100vh - 16px); border-radius: 28px; }
-    .phone-container { border-radius: 25px; }
+    body { padding: 0; }
+    .phone-glow-wrapper { width: 100%; height: 100vh; border-radius: 0; }
+    .phone-container { border-radius: 0; }
     .products-grid { gap: 12px; }
     .card { height: 245px; padding: 10px; border-radius: 16px; }
     .card img { height: 100px; }
     .card .title { font-size: 11px; height: 30px; }
     .card .price { font-size: 13px; margin-bottom: 6px; }
-    .nav-bottom { padding: 12px 15px 22px 15px; }
-    .content-scroll { padding: 15px; padding-bottom: 180px; }
+    .nav-bottom { padding: 15px 15px 25px 15px; min-height: 85px; }
+    .content-scroll { padding: 15px; padding-bottom: 110px; }
     .category-btn { font-size: 10px; padding: 10px 4px; }
+    .nav-btn { font-size: 16px; padding: 16px 15px; border-radius: 14px; min-height: 52px; }
+    .badge { font-size: 12px; padding: 4px 10px; }
 }
 @media (max-width: 350px) {
     .products-grid { grid-template-columns: 1fr; }
     .card { height: auto; }
     .card img { height: 130px; }
+    .nav-btn { font-size: 14px; padding: 14px 10px; white-space: nowrap; border-radius: 12px; min-height: 48px; }
+    .nav-bottom { padding: 12px 10px 20px 10px; min-height: 90px; }
+    .content-scroll { padding-bottom: 100px; }
+    .badge { font-size: 11px; padding: 3px 8px; }
 }
 
 /* --- TABLET --- */
@@ -579,4 +604,47 @@ header {
 /* --- PANTALLAS ULTRA ANCHAS --- */
 @media (min-width: 1700px) {
     .products-grid { grid-template-columns: repeat(6, 1fr); }
+}
+
+/* --- AJUSTES ESPECÍFICOS PARA SAFE AREA DE IPHONES --- */
+@supports (padding: max(0px)) {
+    .nav-bottom {
+        padding-left: max(20px, env(safe-area-inset-left));
+        padding-right: max(20px, env(safe-area-inset-right));
+        padding-bottom: max(25px, env(safe-area-inset-bottom));
+    }
+    
+    .content-scroll {
+        padding-left: max(20px, env(safe-area-inset-left));
+        padding-right: max(20px, env(safe-area-inset-right));
+        padding-bottom: max(120px, calc(120px + env(safe-area-inset-bottom)));
+    }
+}
+
+/* --- ASEGURAR VISIBILIDAD DEL BOTÓN EN TODOS LOS DISPOSITIVOS --- */
+@media (max-width: 480px) {
+    .nav-bottom {
+        padding: 15px 15px max(25px, env(safe-area-inset-bottom)) 15px !important;
+        min-height: 95px !important;
+    }
+    
+    .nav-btn {
+        padding: 18px 15px !important;
+        min-height: 55px !important;
+        font-size: 18px !important;
+        letter-spacing: 1px;
+    }
+    
+    .badge {
+        font-size: 14px !important;
+        padding: 5px 12px !important;
+    }
+    
+    .content-scroll {
+        padding-bottom: max(120px, calc(120px + env(safe-area-inset-bottom))) !important;
+    }
+    
+    .phone-container {
+        padding-bottom: 110px !important;
+    }
 }
