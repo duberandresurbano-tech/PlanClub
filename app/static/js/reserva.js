@@ -272,29 +272,41 @@ async function generarMapaMesas() {
     }
 
     // Obtener mesas disponibles del backend
-    let mesasDisponibles = [];
-    try {
-        const response = await fetch('/api/mesas/todas');
-        const data = await response.json();
-        if (response.ok && data.mesas) {
-            mesasDisponibles = data.mesas;
-        }
-    } catch (error) {
-        console.error('Error al obtener mesas del backend:', error);
-        // En caso de error, usar localStorage como respaldo
-        const historial = JSON.parse(localStorage.getItem('historial_reservas')) || [];
-        const reservaDelDia = historial.find(r => r.fecha === fechaSeleccionada);
-        const mesasOcupadasHoy = reservaDelDia ? reservaDelDia.mesas : [];
-        // Crear mesas por defecto si falla el backend
-        mesasDisponibles = [];
-        for (let i = 1; i <= 10; i++) {
-            mesasDisponibles.push({
-                id_mesa: i.toString(),
-                numero: i,
-                estado: mesasOcupadasHoy.includes(i) ? 'Reservada' : 'Disponible'
-            });
-        }
+let mesasDisponibles = [];
+
+try {
+    const fechaBackend = convertirFechaBackend(fechaSeleccionada);
+
+    const response = await fetch(
+        `/api/mesas/todas?fecha=${encodeURIComponent(fechaBackend)}`
+    );
+
+    const data = await response.json();
+
+    if (!response.ok) {
+        throw new Error(data.error || "Error al obtener las mesas.");
     }
+
+    mesasDisponibles = data.mesas;
+
+} catch (error) {
+    console.error('Error al obtener mesas del backend:', error);
+
+    // En caso de error, usar localStorage como respaldo
+    const historial = JSON.parse(localStorage.getItem('historial_reservas')) || [];
+    const reservaDelDia = historial.find(r => r.fecha === fechaSeleccionada);
+    const mesasOcupadasHoy = reservaDelDia ? reservaDelDia.mesas : [];
+
+    mesasDisponibles = [];
+
+    for (let i = 1; i <= 10; i++) {
+        mesasDisponibles.push({
+            id_mesa: i.toString(),
+            numero: i,
+            estado: mesasOcupadasHoy.includes(i) ? 'Reservada' : 'Disponible'
+        });
+    }
+}
 
     // Coordenadas premium en porcentaje para ubicar de forma envolvente las 10 mesas libres
     const posiciones = [
