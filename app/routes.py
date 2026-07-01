@@ -1,6 +1,8 @@
-from flask import Blueprint, jsonify, request, render_template
+from flask import Blueprint, jsonify, request, render_template, redirect, url_for, current_app
 from app.models import db, Usuario, Rol, Mesa, Reserva
 from datetime import datetime
+from flask_login import login_required, current_user # Asegúrate de tener esto arriba
+from flask_login import login_user, login_required, logout_user, current_user
 
 # 🛠️ CORREGIDO: Cambiamos 'bp' por 'main' para que coincida con tus url_for del HTML
 main = Blueprint('main', __name__)
@@ -10,18 +12,21 @@ main = Blueprint('main', __name__)
 def index():
     return render_template('html/index.html')
 
-# 2. RUTAS DE NAVEGACIÓN (URLs limpias con @main.route)
+@main.route('/login')
+def login_page():
+    return render_template('html/inicio.html')
+
 @main.route('/inicio')
+@login_required # Esto es vital para que Flask sepa quién es el usuario
 def inicio():
+    # DEBUG: Solo para ver qué pasa en la terminal al entrar
+    print(f"DEBUG: Usuario entrando al inicio: {current_user.correo}, Rol: {current_user.id_rol}")
+    
     return render_template('html/inicio.html')
 
 @main.route('/catalogo')
 def catalogo():
     return render_template('html/catalogo.html')
-
-@main.route('/login')
-def login_page():
-    return render_template('html/login.html')
 
 @main.route('/chat')
 def chat():
@@ -34,6 +39,13 @@ def perfil():
 @main.route('/reserva')
 def reserva():
     return render_template('html/reserva.html')
+
+# Tu ruta corregida
+@main.route('/logout')
+@login_required # Es buena práctica proteger el logout también
+def logout():
+    logout_user()
+    return redirect(url_for('main.index'))
 
 
 
@@ -87,10 +99,12 @@ def registro():
 def login_api():
     try:
         data = request.get_json()
-        
+
         usuario = Usuario.query.filter_by(correo=data['correo']).first()
-        
+
         if usuario and usuario.contrasena == data['contrasena']:
+            login_user(usuario)   # <-- AGREGA ESTA LÍNEA
+
             return jsonify({
                 "mensaje": "Login exitoso",
                 "usuario": usuario.nombre,
@@ -100,7 +114,7 @@ def login_api():
             }), 200
         else:
             return jsonify({"error": "Credenciales incorrectas"}), 401
-            
+
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
