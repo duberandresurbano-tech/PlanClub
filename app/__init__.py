@@ -1,17 +1,20 @@
 import os
-from flask import Flask
 from datetime import date
+from flask import Flask
 from flask_login import LoginManager
 from flask_admin import Admin
 from flask_admin.menu import MenuLink
 
 from app.models import db, Usuario, Mesa, Rol, Permisos, Producto
 
+from flask import redirect, url_for
+from flask_login import logout_user
+
 login_manager = LoginManager()
 
 @login_manager.user_loader
 def load_user(user_id):
-    return Usuario.query.get(user_id)
+    return Usuario.query.filter_by(id_usuario=user_id).first()
 
 
 def create_app():
@@ -26,17 +29,30 @@ def create_app():
     login_manager.init_app(app)
     login_manager.login_view = 'main.login_page'
 
+    from flask_login import current_user, logout_user
+    from flask import redirect, url_for
+    from app.services.admin_service import is_user_active
+
+    @app.before_request
+    def check_usuario_activo():
+        if current_user.is_authenticated:
+
+            if not is_user_active(current_user):
+                logout_user()
+                return redirect(url_for("main.login_page"))
+
     # ── Panel Admin ───────────────────────────────────────────────────────────
     from app.admin_views import VistaProtegidaAdmin, UsuarioAdminView
 
     admin = Admin(app, name='👑 Panel Administrativo PlanClub', url='/admin')
 
-    admin.add_view(UsuarioAdminView(Usuario,  db.session, name='Usuarios',  endpoint='usuarios_admin'))
-    admin.add_view(VistaProtegidaAdmin(Rol,      db.session, name='Roles'))
-    admin.add_view(VistaProtegidaAdmin(Permisos, db.session, name='Permisos'))
-    admin.add_view(VistaProtegidaAdmin(Producto, db.session, name='Catálogo'))
-    admin.add_view(VistaProtegidaAdmin(Mesa,     db.session, name='Mesas'))
+    admin.add_view(UsuarioAdminView(Usuario,  db.session, name='👤 Usuarios',  endpoint='usuarios_admin'))
+    admin.add_view(VistaProtegidaAdmin(Rol,      db.session, name='🛡 Roles'))
+    admin.add_view(VistaProtegidaAdmin(Permisos, db.session, name='🔑 Permisos'))
+    admin.add_view(VistaProtegidaAdmin(Producto, db.session, name='🍹 Catálogo'))
+    admin.add_view(VistaProtegidaAdmin(Mesa,     db.session, name='🪑 Mesas'))
     admin.add_link(MenuLink(name='🏠 Volver a PlanClub', url='/inicio'))
+    admin.add_link(MenuLink(name='🚪 Cerrar sesión', url='/logout'))
 
     # ── Blueprints ────────────────────────────────────────────────────────────
     from app.routes import main as main_bp
