@@ -1,31 +1,27 @@
 # ============================================================
 # PLANCLUB — .gitignore
-# Ubicar este archivo en la raíz del proyecto (junto a README.md)
 # ============================================================
 
-
 # ============================================================
-# 1. VARIABLES DE ENTORNO Y CLAVES SECRETAS  ← LO MÁS IMPORTANTE
+# 1. VARIABLES DE ENTORNO
 # ============================================================
 .env
 .env.*
-.env.local
-.env.production
+!.env.example
 *.secret
 secrets.json
 
-
 # ============================================================
-# 2. BASE DE DATOS  ← NUNCA subir datos reales
+# 2. BASES DE DATOS
 # ============================================================
 *.db
 *.sqlite
 *.sqlite3
+instance/
 backend/instance/
 
-
 # ============================================================
-# 3. CACHÉ DE PYTHON  ← Archivos que Python genera automáticamente
+# 3. PYTHON
 # ============================================================
 __pycache__/
 *.py[cod]
@@ -34,71 +30,85 @@ __pycache__/
 *.pyd
 .Python
 
-
 # ============================================================
-# 4. ENTORNO VIRTUAL  ← Cada quien instala el suyo con requirements.txt
+# 4. ENTORNOS VIRTUALES
 # ============================================================
 venv/
 env/
-.venv/
-.env/
 ENV/
-backend/venv/
-backend/env/
-
+.venv/
 
 # ============================================================
-# 5. VS CODE  ← Configuración local de tu máquina, no del proyecto
+# 5. VS CODE
 # ============================================================
 .vscode/settings.json
 .vscode/launch.json
 
-# Sí se sube (configuración compartida del equipo):
+# (Compartir si quieren)
 # .vscode/extensions.json
 
-
 # ============================================================
-# 6. SISTEMA OPERATIVO WINDOWS
-# ============================================================
-Thumbs.db
-ehthumbs.db
-Desktop.ini
-$RECYCLE.BIN/
-
-
-# ============================================================
-# 7. SISTEMA OPERATIVO MAC (por si alguien del equipo usa Mac)
-# ============================================================
-.DS_Store
-.AppleDouble
-.LSOverride
-
-
-# ============================================================
-# 8. LOGS Y ARCHIVOS TEMPORALES
+# 6. LOGS
 # ============================================================
 *.log
 *.tmp
 *.temp
-flask_session/
-instance/
-
 
 # ============================================================
-# 9. DISTRIBUCIÓN Y EMPAQUETADO DE PYTHON
+# 7. CACHE
+# ============================================================
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.cache/
+.pyre/
+
+# ============================================================
+# 8. COVERAGE
+# ============================================================
+.coverage
+.coverage.*
+htmlcov/
+
+# ============================================================
+# 9. BUILD
 # ============================================================
 dist/
 build/
 *.egg-info/
 *.egg
 MANIFEST
-
+pip-wheel-metadata/
 
 # ============================================================
-# 10. PYTEST Y COBERTURA DE TESTS
+# 10. FLASK
 # ============================================================
-.pytest_cache/
-.coverage
-htmlcov/
-
+flask_session/
 instance/*.db
+
+# ============================================================
+# 11. JUPYTER (por si algún día usan notebooks)
+# ============================================================
+.ipynb_checkpoints/
+
+# ============================================================
+# 12. WINDOWS
+# ============================================================
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# ============================================================
+# 13. MAC
+# ============================================================
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# ============================================================
+# 14. BACKUPS
+# ============================================================
+*.bak
+*.old
+*.orig
