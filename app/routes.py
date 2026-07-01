@@ -1,8 +1,8 @@
 from flask import Blueprint, jsonify, request, render_template, redirect, url_for, current_app
 from app.models import db, Usuario, Rol, Mesa, Reserva
 from datetime import datetime
-from flask_login import login_required, current_user # Asegúrate de tener esto arriba
 from flask_login import login_user, login_required, logout_user, current_user
+import re
 
 # 🛠️ CORREGIDO: Cambiamos 'bp' por 'main' para que coincida con tus url_for del HTML
 main = Blueprint('main', __name__)
@@ -116,6 +116,46 @@ def login_api():
             return jsonify({"error": "Credenciales incorrectas"}), 401
 
     except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+# RUTA DE RECUPERACIÓN DE CONTRASEÑA
+@main.route('/api/recuperar-contrasena', methods=['POST'])
+def recuperar_contrasena():
+    try:
+        data = request.get_json()
+        correo = data.get('correo')
+        nueva_contrasena = data.get('nueva_contrasena')
+        
+        if not correo or not nueva_contrasena:
+            return jsonify({"error": "Correo y nueva contraseña son requeridos"}), 400
+        
+        # Validar formato de correo
+        correo_regex = r'^[^\s@]+@[^\s@]+\.[^\s@]+$'
+        if not re.match(correo_regex, correo):
+            return jsonify({"error": "Formato de correo inválido"}), 400
+        
+        # Validar requisitos de contraseña
+        pass_regex = r'^(?=.*[A-Z])(?=.*\d).{8,}$'
+        if not re.match(pass_regex, nueva_contrasena):
+            return jsonify({"error": "La contraseña debe tener al menos 8 caracteres, una mayúscula y un número"}), 400
+        
+        # Buscar usuario por correo
+        usuario = Usuario.query.filter_by(correo=correo.lower()).first()
+        if not usuario:
+            return jsonify({"error": "No existe un usuario registrado con ese correo"}), 404
+        
+        # Actualizar contraseña
+        usuario.contrasena = nueva_contrasena
+        db.session.commit()
+        
+        return jsonify({
+            "mensaje": "Contraseña actualizada exitosamente",
+            "correo": correo
+        }), 200
+        
+    except Exception as e:
+        db.session.rollback()
         return jsonify({"error": str(e)}), 500
 
 
