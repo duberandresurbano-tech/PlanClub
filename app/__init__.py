@@ -23,6 +23,10 @@ def create_app():
     entorno = os.environ.get('FLASK_ENV', 'development')
     from app.config import config_map
     app.config.from_object(config_map.get(entorno, config_map['default']))
+    print("\n==============================")
+    print("BASE DE DATOS:")
+    print(app.config["SQLALCHEMY_DATABASE_URI"])
+    print("==============================\n")
 
     db.init_app(app)
 
